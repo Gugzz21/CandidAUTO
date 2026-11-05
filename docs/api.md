@@ -1,5 +1,6 @@
 # Contratos da API REST (v1) — Etapas 1 a 6
 
+
 Todos os endpoints utilizam DTOs dedicados e isolam os dados pelo escopo de `user_id` (suportando cabeçalho opcional `X-User-Id` para testes multiusuário).
 
 ## Etapa 1 — Currículos e Perfil Profissional
