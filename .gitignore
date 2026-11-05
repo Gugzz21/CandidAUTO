@@ -12,12 +12,12 @@ build/
 *.iml
 
 # Currículos e arquivos pessoais
-storage/
+/storage/
 infra/storage/resumes/
 infra/postgres-data/
-uploads/
-*.pdf
-*.docx
+/uploads/
+/infra/storage/**/*.pdf
+/infra/storage/**/*.docx
 
 # Logs e arquivos temporários
 *.log
