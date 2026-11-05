@@ -1,11 +1,11 @@
 # Modelagem do Banco de Dados (PostgreSQL 16 + Flyway)
 
-O esquema relacional é gerenciado pelas migrações Flyway `V1` a `V4` em `backend/src/main/resources/db/migration/`.
+O esquema relacional é gerenciado pelas migrações Flyway `V1` a `V5` em `backend/src/main/resources/db/migration/`.
 
 ## Tabelas Principais
 
-1. **`users`** (`V1__init_schema.sql`)
-   - `id` (`UUID` PK), `name`, `email` (`UNIQUE`), `created_at`
+1. **`users`** (`V1__init_schema.sql`, expandida em `V5__security_and_discovery_diagnostics.sql`)
+   - `id` (`UUID` PK), `name`, `email` (`UNIQUE`, indexado case-insensitive em `LOWER(email)`), `password_hash` (`VARCHAR(255)` BCrypt), `created_at`
 
 2. **`resumes`** (`V1__init_schema.sql`)
    - `id` (`UUID` PK), `user_id` (`FK -> users.id`), `filename`, `storage_key` (`UNIQUE`), `file_type` (`PDF` / `DOCX`), `file_size_bytes`, `extracted_text`, `status`, `error_message`, `uploaded_at`
@@ -39,5 +39,5 @@ O esquema relacional é gerenciado pelas migrações Flyway `V1` a `V4` em `back
    - Colunas `JSONB`: `prepared_fields`, `missing_questions`, `audit_log`
    - `user_approved_explicitly` (`BOOLEAN`), `submitted_at`, `submission_receipt`, `notes`, `created_at`, `updated_at`, constraint `UNIQUE (user_id, job_id)`
 
-10. **`search_configs`** (`V4__applications_and_automation.sql`)
-    - `id` (`UUID` PK), `user_id` (`UNIQUE FK -> users.id`), `desired_roles` (`JSONB`), `desired_modalities` (`JSONB`), `desired_seniorities` (`JSONB`), `min_compatibility_score`, `auto_monitoring_enabled`, `interval_minutes`, `last_run_at`, `last_run_summary`, `updated_at`
+10. **`search_configs`** (`V4__applications_and_automation.sql`, expandida em `V5__security_and_discovery_diagnostics.sql`)
+    - `id` (`UUID` PK), `user_id` (`UNIQUE FK -> users.id`), `desired_roles` (`JSONB`), `desired_modalities` (`JSONB`), `desired_seniorities` (`JSONB`), `min_compatibility_score`, `auto_monitoring_enabled`, `interval_minutes`, `last_run_at`, `last_run_summary`, `last_execution_diagnostics` (`JSONB`), `updated_at`

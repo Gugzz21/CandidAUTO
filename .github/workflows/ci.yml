@@ -60,7 +60,7 @@ jobs:
           DB_NAME: job_assistant
           DB_USER: job_assistant
           DB_PASSWORD: ci_ephemeral_db_password_2026
-          JWT_SECRET: ci-ephemeral-jwt-hmac-sha256-secret-key-candidauto-2026
+          APP_JWT_SECRET: ci-ephemeral-jwt-hmac-sha256-secret-key-candidauto-2026
         run: mvn -B -f backend/pom.xml test
 
   frontend-tests-and-build:

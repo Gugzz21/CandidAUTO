@@ -98,10 +98,27 @@ async function fetchWithAuth(
   if (token && !headers.has('Authorization')) {
     headers.set('Authorization', `Bearer ${token}`);
   }
-  return fetch(url, {
+  const response = await fetch(url, {
     ...init,
     headers,
   });
+
+  // Se o backend foi reiniciado com nova chave efêmera e o JWT em sessionStorage expirou/invalidou (401),
+  // renova automaticamente a sessão local uma única vez de forma transparente.
+  if (response.status === 401 && token && !(init.headers instanceof Headers && init.headers.has('Authorization'))) {
+    storeToken(null);
+    const freshToken = await ensureAuthToken();
+    if (freshToken && freshToken !== token) {
+      const retryHeaders = new Headers(init.headers || {});
+      retryHeaders.set('Authorization', `Bearer ${freshToken}`);
+      return fetch(url, {
+        ...init,
+        headers: retryHeaders,
+      });
+    }
+  }
+
+  return response;
 }
 
 async function parseResponse<T>(response: Response): Promise<T> {

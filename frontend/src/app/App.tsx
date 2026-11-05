@@ -256,6 +256,12 @@ export const App: React.FC = () => {
       ]);
       setJobs(refreshedJobs);
       setSources(refreshedSources);
+      try {
+        const updatedCfg = await jobAssistantApi.getSearchConfig();
+        setSearchConfig(updatedCfg);
+      } catch {
+        // Opcional em mocks parciais
+      }
       await refreshOpportunitiesAndApplications();
     } catch (err) {
       setGlobalError(

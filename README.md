@@ -42,7 +42,7 @@ Aplicação web completa desenvolvida sob a arquitetura **Personal First, SaaS R
    ```
 2. Defina suas credenciais locais no `.env`:
    - `DB_PASSWORD`: senha do banco PostgreSQL local.
-   - `JWT_SECRET`: chave secreta HMAC-SHA256 para assinatura de sessões JWT.
+   - `APP_JWT_SECRET`: chave secreta HMAC-SHA256 (`>= 32` caracteres) para assinatura de sessões JWT.
    - `CandidAUTO_API_KEY`: chave de API para o provedor LLM compatível com OpenAI/NVIDIA NIM (opcional; sem chave, o analisador determinístico local permanece operacional).
 
 ---
