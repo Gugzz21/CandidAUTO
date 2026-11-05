@@ -55,6 +55,9 @@ public class JobMatchingEngineService {
                 .orElseThrow(() -> new ResourceNotFoundException("Vaga não encontrada para o usuário atual."));
         CandidateProfileEntity profile = profileRepository.findByUserId(userId)
                 .orElseThrow(() -> new BadRequestException("Cadastre seu perfil profissional antes de executar a análise de compatibilidade."));
+        if (!profile.isConfirmed()) {
+            throw new BadRequestException("Confirme explicitamente seu perfil profissional na aba 'Validação' antes de analisar a compatibilidade com vagas.");
+        }
 
         JobMatchAnalysisEntity saved = computeAndSaveMatch(userId, profile, job);
         return toDto(saved);
@@ -65,6 +68,9 @@ public class JobMatchingEngineService {
         UUID userId = currentUserProvider.getCurrentUserId();
         CandidateProfileEntity profile = profileRepository.findByUserId(userId)
                 .orElseThrow(() -> new BadRequestException("Cadastre seu perfil profissional antes de executar a análise de compatibilidade."));
+        if (!profile.isConfirmed()) {
+            throw new BadRequestException("Confirme explicitamente seu perfil profissional na aba 'Validação' antes de analisar a compatibilidade com vagas.");
+        }
 
         List<JobPostingEntity> activeJobs = jobRepository.findAllByUserIdOrderByDiscoveredAtDesc(userId)
                 .stream()

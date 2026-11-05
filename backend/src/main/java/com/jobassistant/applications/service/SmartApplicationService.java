@@ -82,6 +82,9 @@ public class SmartApplicationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Vaga não encontrada para o usuário atual."));
         CandidateProfileEntity profile = profileRepository.findByUserId(userId)
                 .orElseThrow(() -> new BadRequestException("Cadastre e revise seu perfil profissional antes de preparar uma candidatura."));
+        if (!profile.isConfirmed()) {
+            throw new BadRequestException("Regra de segurança: confirme explicitamente seu perfil profissional na aba 'Validação' antes de preparar uma candidatura.");
+        }
 
         if (!job.isActive()) {
             throw new BadRequestException("Esta oportunidade encontra-se encerrada ou indisponível.");

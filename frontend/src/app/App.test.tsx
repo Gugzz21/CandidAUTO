@@ -283,8 +283,10 @@ describe('Job Assistant Frontend — Plataforma Completa (Etapas 1 a 6)', () => 
 
     expect(screen.getByTestId('evidence-item-fullName')).toBeDefined();
     expect(screen.getByTestId('evidence-item-education')).toBeDefined();
-    expect(screen.getByText('Evidência Verificada no Currículo')).toBeDefined();
-    expect(screen.getByText('Requer Revisão Humana')).toBeDefined();
+    expect(
+      screen.getByText(/Extraído \(Evidência Verificada no Currículo\)/i)
+    ).toBeDefined();
+    expect(screen.getByText(/Não Encontrado no Documento/i)).toBeDefined();
   });
 
   it('deve permitir editar e salvar o perfil profissional manualmente', async () => {

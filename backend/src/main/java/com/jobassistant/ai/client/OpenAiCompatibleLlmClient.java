@@ -7,6 +7,7 @@ import com.jobassistant.ai.prompt.ResumeExtractionPromptBuilder;
 import com.jobassistant.shared.FileProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,17 +36,42 @@ public class OpenAiCompatibleLlmClient implements LlmClient {
     private final HttpClient httpClient;
 
     public OpenAiCompatibleLlmClient(
-            @Value("${app.llm.api-url:https://generativelanguage.googleapis.com/v1beta/openai/chat/completions}") String apiUrl,
+            String apiUrl,
+            String apiKey,
+            String model,
+            int timeoutSeconds,
+            ObjectMapper objectMapper,
+            ResumeExtractionPromptBuilder promptBuilder,
+            DeterministicResumeAnalyzer deterministicAnalyzer
+    ) {
+        this(apiUrl, apiKey, "", "", "", "", model, timeoutSeconds, objectMapper, promptBuilder, deterministicAnalyzer);
+    }
+
+    @Autowired
+    public OpenAiCompatibleLlmClient(
+            @Value("${app.llm.api-url:https://integrate.api.nvidia.com/v1/chat/completions}") String apiUrl,
             @Value("${app.llm.api-key:}") String apiKey,
-            @Value("${app.llm.model:gemini-2.5-flash}") String model,
+            @Value("${CandidAUTO_API_KEY:${CANDIDAUTO_API_KEY:}}") String candidAutoApiKey,
+            @Value("${NVIDIA_API_KEY:}") String nvidiaApiKey,
+            @Value("${NVIDIA_API_URL:}") String nvidiaApiUrl,
+            @Value("${NVIDIA_MODEL:}") String nvidiaModel,
+            @Value("${app.llm.model:meta/llama-3.1-70b-instruct}") String model,
             @Value("${app.llm.timeout-seconds:45}") int timeoutSeconds,
             ObjectMapper objectMapper,
             ResumeExtractionPromptBuilder promptBuilder,
             DeterministicResumeAnalyzer deterministicAnalyzer
     ) {
-        this.apiUrl = apiUrl;
-        this.apiKey = apiKey != null ? apiKey.trim() : "";
-        this.model = model;
+        String resolvedKey = (candidAutoApiKey != null && !candidAutoApiKey.isBlank()) ? candidAutoApiKey.trim()
+                : (nvidiaApiKey != null && !nvidiaApiKey.isBlank()) ? nvidiaApiKey.trim()
+                : (apiKey != null ? apiKey.trim() : "");
+        String resolvedUrl = (nvidiaApiUrl != null && !nvidiaApiUrl.isBlank()) ? nvidiaApiUrl.trim()
+                : ((apiUrl != null && !apiUrl.isBlank()) ? apiUrl.trim() : "https://integrate.api.nvidia.com/v1/chat/completions");
+        String resolvedModel = (nvidiaModel != null && !nvidiaModel.isBlank()) ? nvidiaModel.trim()
+                : ((model != null && !model.isBlank()) ? model.trim() : "meta/llama-3.1-70b-instruct");
+
+        this.apiUrl = resolvedUrl;
+        this.apiKey = resolvedKey;
+        this.model = resolvedModel;
         this.timeout = Duration.ofSeconds(Math.max(timeoutSeconds, 5));
         this.objectMapper = objectMapper;
         this.promptBuilder = promptBuilder;
@@ -61,31 +88,19 @@ public class OpenAiCompatibleLlmClient implements LlmClient {
         }
 
         if (apiKey.isEmpty()) {
-            log.info("LLM_API_KEY não configurada; executando extrator estruturado determinístico baseado em evidências literais.");
+            log.info("Nenhuma chave de API externa (LLM_API_KEY / NVIDIA_API_KEY) configurada; executando extrator estruturado determinístico baseado em evidências literais.");
             return deterministicAnalyzer.analyze(resumeText);
         }
 
         try {
-            Map<String, Object> payload = Map.of(
-                    "model", model,
-                    "temperature", 0.0,
-                    "response_format", Map.of("type", "json_object"),
-                    "messages", List.of(
-                            Map.of("role", "system", "content", promptBuilder.buildSystemPrompt()),
-                            Map.of("role", "user", "content", promptBuilder.buildUserPrompt(resumeText))
-                    )
-            );
+            HttpResponse<String> response = sendChatCompletionRequest(resumeText, true);
+            // Alguns modelos na API NVIDIA NIM não aceitam response_format=json_object e retornam HTTP 400/422
+            if (response.statusCode() == 400 || response.statusCode() == 422) {
+                log.info("Modelo {} retornou HTTP {} com response_format=json_object; repetindo requisição sem response_format explícito.",
+                        model, response.statusCode());
+                response = sendChatCompletionRequest(resumeText, false);
+            }
 
-            String requestBody = objectMapper.writeValueAsString(payload);
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(apiUrl))
-                    .timeout(timeout)
-                    .header("Content-Type", "application/json")
-                    .header("Authorization", "Bearer " + apiKey)
-                    .POST(HttpRequest.BodyPublishers.ofString(requestBody))
-                    .build();
-
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 429) {
                 throw new FileProcessingException("Limite de requisições do provedor de IA atingido (HTTP 429). Tente novamente em instantes.");
             }
@@ -99,8 +114,9 @@ public class OpenAiCompatibleLlmClient implements LlmClient {
                 throw new FileProcessingException("Resposta vazia ou malformada recebida do provedor de IA.");
             }
 
-            String rawJson = cleanJsonFence(contentNode.asText());
-            return objectMapper.readValue(rawJson, AiStructuredProfileResponse.class);
+            String rawJson = extractJsonObjectString(contentNode.asText());
+            AiStructuredProfileResponse parsed = objectMapper.readValue(rawJson, AiStructuredProfileResponse.class);
+            return mergeWithDeterministicFallbackIfEmpty(parsed, resumeText);
         } catch (FileProcessingException e) {
             throw e;
         } catch (InterruptedException e) {
@@ -111,7 +127,48 @@ public class OpenAiCompatibleLlmClient implements LlmClient {
         }
     }
 
-    private String cleanJsonFence(String text) {
+    private HttpResponse<String> sendChatCompletionRequest(String resumeText, boolean includeJsonResponseFormat)
+            throws IOException, InterruptedException {
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("model", model);
+        payload.put("temperature", 0.0);
+        if (includeJsonResponseFormat) {
+            payload.put("response_format", Map.of("type", "json_object"));
+        }
+        payload.put("messages", List.of(
+                Map.of("role", "system", "content", promptBuilder.buildSystemPrompt()),
+                Map.of("role", "user", "content", promptBuilder.buildUserPrompt(resumeText))
+        ));
+
+        String requestBody = objectMapper.writeValueAsString(payload);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(apiUrl))
+                .timeout(timeout)
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .header("Authorization", "Bearer " + apiKey)
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                .build();
+
+        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    private AiStructuredProfileResponse mergeWithDeterministicFallbackIfEmpty(
+            AiStructuredProfileResponse aiResp,
+            String resumeText
+    ) {
+        if (aiResp == null) {
+            return deterministicAnalyzer.analyze(resumeText);
+        }
+        boolean missingCore = (aiResp.fullName() == null || aiResp.fullName().isBlank())
+                && (aiResp.skills() == null || aiResp.skills().isEmpty());
+        if (missingCore) {
+            return deterministicAnalyzer.analyze(resumeText);
+        }
+        return aiResp;
+    }
+
+    private String extractJsonObjectString(String text) {
         String trimmed = text.trim();
         if (trimmed.startsWith("```json")) {
             trimmed = trimmed.substring(7);
@@ -121,6 +178,12 @@ public class OpenAiCompatibleLlmClient implements LlmClient {
         if (trimmed.endsWith("```")) {
             trimmed = trimmed.substring(0, trimmed.length() - 3);
         }
-        return trimmed.trim();
+        trimmed = trimmed.trim();
+        int firstBrace = trimmed.indexOf('{');
+        int lastBrace = trimmed.lastIndexOf('}');
+        if (firstBrace >= 0 && lastBrace > firstBrace) {
+            return trimmed.substring(firstBrace, lastBrace + 1);
+        }
+        return trimmed;
     }
 }

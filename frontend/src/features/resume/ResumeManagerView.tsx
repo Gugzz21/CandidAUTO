@@ -6,8 +6,10 @@ import {
   AlertCircle,
   Loader2,
   Eye,
+  CheckCircle2,
+  Clock,
 } from 'lucide-react';
-import type { ResumeDto } from '../../types/api';
+import type { ResumeDto, ResumeStatus } from '../../types/api';
 import { StatusBadge } from '../../components/StatusBadge';
 
 interface ResumeManagerViewProps {
@@ -16,6 +18,36 @@ interface ResumeManagerViewProps {
   analyzingResumeId: string | null;
   onUploadFile: (file: File) => Promise<void>;
   onAnalyzeResume: (id: string) => Promise<void>;
+}
+
+const PROCESSING_STEPS: { id: number; label: string; minStage: number }[] = [
+  { id: 1, label: '1. Arquivo recebido', minStage: 1 },
+  { id: 2, label: '2. Validação concluída', minStage: 1 },
+  { id: 3, label: '3. Texto extraído', minStage: 2 },
+  { id: 4, label: '4. Análise solicitada à IA', minStage: 3 },
+  { id: 5, label: '5. Resultado validado', minStage: 4 },
+  { id: 6, label: '6. Perfil aguardando revisão / confirmado', minStage: 4 },
+];
+
+function getStageLevel(status: ResumeStatus | null, isUploading: boolean, isAnalyzing: boolean): number {
+  if (isUploading) return 1;
+  if (!status) return 0;
+  if (isAnalyzing || status === 'ANALYZING') return 3;
+  switch (status) {
+    case 'UPLOADED':
+    case 'EXTRACTING':
+      return 1;
+    case 'EXTRACTED':
+      return 2;
+    case 'REVIEW_REQUIRED':
+      return 4;
+    case 'CONFIRMED':
+      return 5;
+    case 'FAILED':
+      return -1;
+    default:
+      return 0;
+  }
 }
 
 export const ResumeManagerView: React.FC<ResumeManagerViewProps> = ({
@@ -29,44 +61,97 @@ export const ResumeManagerView: React.FC<ResumeManagerViewProps> = ({
     resumes[0]?.id ?? null
   );
   const [localError, setLocalError] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const selectedResume =
     resumes.find((r) => r.id === selectedResumeId) ?? resumes[0] ?? null;
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const processSelectedFile = async (file: File | undefined) => {
     setLocalError(null);
-    const file = e.target.files?.[0];
     if (!file) return;
 
     const lowerName = file.name.toLowerCase();
     if (!lowerName.endsWith('.pdf') && !lowerName.endsWith('.docx')) {
-      setLocalError('Selecione apenas arquivos nos formatos PDF (.pdf) ou Word (.docx).');
+      setLocalError(
+        'Selecione apenas arquivos nos formatos PDF (.pdf) ou Word (.docx).'
+      );
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      setLocalError('O arquivo excede o tamanho máximo permitido de 10 MB.');
       return;
     }
 
     try {
       await onUploadFile(file);
     } catch (err) {
-      setLocalError(err instanceof Error ? err.message : 'Falha no envio do arquivo.');
+      setLocalError(
+        err instanceof Error ? err.message : 'Falha no envio do arquivo.'
+      );
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    try {
+      await processSelectedFile(file);
     } finally {
       e.target.value = '';
     }
   };
 
+  const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isUploading) {
+      setIsDragging(true);
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    if (isUploading) return;
+    const file = e.dataTransfer.files?.[0];
+    await processSelectedFile(file);
+  };
+
+  const activeStage = getStageLevel(
+    selectedResume?.status ?? null,
+    isUploading,
+    Boolean(selectedResume && analyzingResumeId === selectedResume.id)
+  );
+
   return (
     <div className="space-y-6">
+      {/* Tela 1 — Envio do currículo com Drag & Drop real */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6">
         <h2 className="text-lg font-semibold text-white">
           Importar Currículo (PDF ou DOCX)
         </h2>
         <p className="mt-1 text-sm text-slate-400">
-          O documento é armazenado em diretório privado com identificador interno e seu texto é extraído localmente com Apache PDFBox / Apache POI.
+          O documento é validado binariamente, armazenado em diretório privado com identificador interno e seu texto é extraído localmente com Apache PDFBox / Apache POI.
         </p>
 
         <div className="mt-4">
           <label
             htmlFor="resume-upload-input"
-            className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-700 bg-slate-950/60 px-6 py-8 text-center transition hover:border-indigo-500/60 hover:bg-slate-900/60"
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-8 text-center transition ${
+              isDragging
+                ? 'border-indigo-400 bg-indigo-950/40'
+                : 'border-slate-700 bg-slate-950/60 hover:border-indigo-500/60 hover:bg-slate-900/60'
+            }`}
           >
             {isUploading ? (
               <Loader2 className="h-8 w-8 animate-spin text-indigo-400" />
@@ -76,7 +161,7 @@ export const ResumeManagerView: React.FC<ResumeManagerViewProps> = ({
             <span className="mt-3 text-sm font-medium text-white">
               {isUploading
                 ? 'Enviando e extraindo texto do currículo...'
-                : 'Clique para selecionar um arquivo PDF ou DOCX'}
+                : 'Arraste e solte seu arquivo PDF ou DOCX aqui, ou clique para selecionar'}
             </span>
             <span className="mt-1 text-xs text-slate-400">
               Tamanho máximo permitido: 10 MB • Apenas documentos com texto selecionável
@@ -102,6 +187,35 @@ export const ResumeManagerView: React.FC<ResumeManagerViewProps> = ({
             <span>{localError}</span>
           </div>
         )}
+      </div>
+
+      {/* Tela 2 — Etapas Reais do Processamento */}
+      <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+          Etapas Reais do Processamento (Currículo Selecionado)
+        </h3>
+        <div className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-6">
+          {PROCESSING_STEPS.map((step) => {
+            const done = activeStage >= step.minStage;
+            return (
+              <div
+                key={step.id}
+                className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 text-xs ${
+                  done
+                    ? 'border-emerald-700/60 bg-emerald-950/30 text-emerald-200'
+                    : 'border-slate-800 bg-slate-950/60 text-slate-400'
+                }`}
+              >
+                {done ? (
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
+                ) : (
+                  <Clock className="h-4 w-4 shrink-0 text-slate-500" />
+                )}
+                <span className="font-medium">{step.label}</span>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Lista de currículos e visualização do texto extraído */}
@@ -164,7 +278,7 @@ export const ResumeManagerView: React.FC<ResumeManagerViewProps> = ({
                         type="button"
                         data-testid={`analyze-btn-${resume.id}`}
                         disabled={isAnalyzing}
-                        onClick={() => onAnalyzeResume(resume.id)}
+                        onClick={() => void onAnalyzeResume(resume.id)}
                         className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-indigo-500 disabled:opacity-50"
                       >
                         {isAnalyzing ? (

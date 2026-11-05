@@ -9,9 +9,11 @@ import {
 } from 'lucide-react';
 import type {
   CandidateProfileDto,
+  CertificationItemDto,
   EducationItemDto,
   ExperienceItemDto,
   LanguageItemDto,
+  ProjectItemDto,
   SkillItemDto,
   UpdateProfileRequestDto,
 } from '../../types/api';
@@ -46,6 +48,8 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
   const [experiences, setExperiences] = useState<ExperienceItemDto[]>([]);
   const [education, setEducation] = useState<EducationItemDto[]>([]);
   const [languages, setLanguages] = useState<LanguageItemDto[]>([]);
+  const [certifications, setCertifications] = useState<CertificationItemDto[]>([]);
+  const [projects, setProjects] = useState<ProjectItemDto[]>([]);
 
   const [feedback, setFeedback] = useState<{
     type: 'success' | 'error';
@@ -69,6 +73,8 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
     setExperiences(profile.experiences ?? []);
     setEducation(profile.education ?? []);
     setLanguages(profile.languages ?? []);
+    setCertifications(profile.certifications ?? []);
+    setProjects(profile.projects ?? []);
   }, [profile]);
 
   const handleAddSkill = () => {
@@ -149,6 +155,84 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
     setEducation((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const handleAddLanguage = () => {
+    setLanguages((prev) => [
+      ...prev,
+      {
+        language: '',
+        proficiency: 'Intermediário',
+        evidenceExcerpt: 'Informado pelo candidato',
+      },
+    ]);
+  };
+
+  const handleUpdateLanguage = (
+    index: number,
+    field: keyof LanguageItemDto,
+    value: string
+  ) => {
+    setLanguages((prev) =>
+      prev.map((lang, i) => (i === index ? { ...lang, [field]: value } : lang))
+    );
+  };
+
+  const handleRemoveLanguage = (index: number) => {
+    setLanguages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleAddCertification = () => {
+    setCertifications((prev) => [
+      ...prev,
+      {
+        name: '',
+        issuer: '',
+        year: '',
+        evidenceExcerpt: 'Informado pelo candidato',
+      },
+    ]);
+  };
+
+  const handleUpdateCertification = (
+    index: number,
+    field: keyof CertificationItemDto,
+    value: string
+  ) => {
+    setCertifications((prev) =>
+      prev.map((cert, i) => (i === index ? { ...cert, [field]: value } : cert))
+    );
+  };
+
+  const handleRemoveCertification = (index: number) => {
+    setCertifications((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleAddProject = () => {
+    setProjects((prev) => [
+      ...prev,
+      {
+        name: '',
+        description: '',
+        technologies: [],
+        url: '',
+        evidenceExcerpt: 'Informado pelo candidato',
+      },
+    ]);
+  };
+
+  const handleUpdateProject = (
+    index: number,
+    field: keyof ProjectItemDto,
+    value: string
+  ) => {
+    setProjects((prev) =>
+      prev.map((proj, i) => (i === index ? { ...proj, [field]: value } : proj))
+    );
+  };
+
+  const handleRemoveProject = (index: number) => {
+    setProjects((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFeedback(null);
@@ -184,13 +268,14 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
         education,
         skills,
         languages,
-        certifications: profile?.certifications ?? [],
-        projects: profile?.projects ?? [],
+        certifications,
+        projects,
         targetRoles,
       });
       setFeedback({
         type: 'success',
-        message: 'Perfil profissional atualizado com sucesso! Avance para a aba "Validação" para confirmar.',
+        message:
+          'Perfil profissional atualizado com sucesso! Avance para a aba "Validação" para confirmar.',
       });
     } catch (err) {
       setFeedback({
@@ -208,10 +293,10 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
       <div className="flex flex-col justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-900/70 p-6 sm:flex-row sm:items-center">
         <div>
           <h2 className="text-lg font-semibold text-white">
-            Perfil Profissional Estruturado
+            Perfil Profissional Estruturado (Revisão Completa)
           </h2>
           <p className="mt-1 text-sm text-slate-400">
-            Revise, complemente e corrija todas as informações extraídas do seu currículo.
+            Revise, complemente e corrija todas as seções extraídas do seu currículo antes da confirmação explícita.
           </p>
         </div>
         <button
@@ -251,7 +336,7 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
           <h3 className="text-sm font-semibold uppercase tracking-wider text-indigo-400">
-            Identificação & Senioridade
+            Identificação, Resumo & Senioridade
           </h3>
           <div>
             <label
@@ -349,7 +434,7 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
 
         <div className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
           <h3 className="text-sm font-semibold uppercase tracking-wider text-indigo-400">
-            Informações de Contato
+            Dados de Contato & Links Profissionais
           </h3>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
@@ -413,13 +498,26 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
               />
             </div>
           </div>
+
+          <div>
+            <label className="block text-xs font-medium text-slate-300">
+              Portfólio / Site Pessoal URL
+            </label>
+            <input
+              type="text"
+              value={portfolioUrl}
+              onChange={(e) => setPortfolioUrl(e.target.value)}
+              placeholder="https://meuportfolio.dev"
+              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Competências e Tecnologias */}
+      {/* Competências Técnicas e Comportamentais */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
         <h3 className="text-sm font-semibold uppercase tracking-wider text-indigo-400">
-          Tecnologias, Linguagens e Competências ({skills.length})
+          Competências Técnicas e Comportamentais ({skills.length})
         </h3>
         <div className="mt-3 flex flex-wrap gap-2">
           {skills.map((skill, idx) => (
@@ -447,7 +545,7 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
             type="text"
             value={newSkillName}
             onChange={(e) => setNewSkillName(e.target.value)}
-            placeholder="Adicionar competência (ex.: Docker, AWS, TDD)..."
+            placeholder="Adicionar competência (ex.: Docker, AWS, Comunicação)..."
             className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs text-white focus:border-indigo-500 focus:outline-none"
           />
           <select
@@ -615,6 +713,166 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Idiomas, Certificações e Projetos (Seção 5 — Tela 3 Completa) */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {/* Idiomas */}
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-indigo-400">
+              Idiomas ({languages.length})
+            </h3>
+            <button
+              type="button"
+              onClick={handleAddLanguage}
+              className="inline-flex items-center gap-1 rounded-lg bg-slate-800 px-2.5 py-1 text-xs font-medium text-white hover:bg-slate-700"
+            >
+              <Plus className="h-3 w-3" />
+              Idioma
+            </button>
+          </div>
+          <div className="mt-3 space-y-2.5">
+            {languages.map((lang, idx) => (
+              <div
+                key={idx}
+                className="flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-950/60 p-2.5"
+              >
+                <input
+                  type="text"
+                  value={lang.language}
+                  onChange={(e) =>
+                    handleUpdateLanguage(idx, 'language', e.target.value)
+                  }
+                  placeholder="Ex.: Inglês"
+                  className="w-1/2 rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-white"
+                />
+                <input
+                  type="text"
+                  value={lang.proficiency}
+                  onChange={(e) =>
+                    handleUpdateLanguage(idx, 'proficiency', e.target.value)
+                  }
+                  placeholder="Nível"
+                  className="w-1/2 rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-white"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleRemoveLanguage(idx)}
+                  className="text-slate-400 hover:text-rose-400"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Certificações e Cursos */}
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-indigo-400">
+              Certificações & Cursos ({certifications.length})
+            </h3>
+            <button
+              type="button"
+              onClick={handleAddCertification}
+              className="inline-flex items-center gap-1 rounded-lg bg-slate-800 px-2.5 py-1 text-xs font-medium text-white hover:bg-slate-700"
+            >
+              <Plus className="h-3 w-3" />
+              Curso
+            </button>
+          </div>
+          <div className="mt-3 space-y-2.5">
+            {certifications.map((cert, idx) => (
+              <div
+                key={idx}
+                className="space-y-1.5 rounded-xl border border-slate-800 bg-slate-950/60 p-2.5"
+              >
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={cert.name}
+                    onChange={(e) =>
+                      handleUpdateCertification(idx, 'name', e.target.value)
+                    }
+                    placeholder="Nome da certificação / curso"
+                    className="w-full rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-white"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveCertification(idx)}
+                    className="text-slate-400 hover:text-rose-400"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  value={cert.issuer}
+                  onChange={(e) =>
+                    handleUpdateCertification(idx, 'issuer', e.target.value)
+                  }
+                  placeholder="Instituição emissora"
+                  className="w-full rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-white"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Projetos */}
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-indigo-400">
+              Projetos ({projects.length})
+            </h3>
+            <button
+              type="button"
+              onClick={handleAddProject}
+              className="inline-flex items-center gap-1 rounded-lg bg-slate-800 px-2.5 py-1 text-xs font-medium text-white hover:bg-slate-700"
+            >
+              <Plus className="h-3 w-3" />
+              Projeto
+            </button>
+          </div>
+          <div className="mt-3 space-y-2.5">
+            {projects.map((proj, idx) => (
+              <div
+                key={idx}
+                className="space-y-1.5 rounded-xl border border-slate-800 bg-slate-950/60 p-2.5"
+              >
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={proj.name}
+                    onChange={(e) =>
+                      handleUpdateProject(idx, 'name', e.target.value)
+                    }
+                    placeholder="Nome do projeto"
+                    className="w-full rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-white"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveProject(idx)}
+                    className="text-slate-400 hover:text-rose-400"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  value={proj.description}
+                  onChange={(e) =>
+                    handleUpdateProject(idx, 'description', e.target.value)
+                  }
+                  placeholder="Descrição / tecnologias"
+                  className="w-full rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-white"
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </form>
