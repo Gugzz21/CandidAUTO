@@ -1,6 +1,6 @@
-# Job Assistant — Plataforma Inteligente de Busca e Candidatura a Vagas com IA
+# CandidAUTO — Plataforma Inteligente de Busca e Candidatura a Vagas com IA
 
-Aplicação web desenvolvida sob a estratégia **Personal First, SaaS Ready** para organização do perfil profissional, extração e estruturação de currículos (PDF e DOCX) com rastreamento de evidências por IA e revisão/confirmação explícita pelo candidato.
+Aplicação web completa desenvolvida sob a arquitetura **Personal First, SaaS Ready** que atua como um **agente inteligente de recrutamento e candidaturas**: analisa currículos (PDF e DOCX) com rastreamento de evidências sem alucinação, descobre oportunidades reais em plataformas de emprego, calcula compatibilidade de `0 a 100%`, prepara o preenchimento inteligente de formulários com Cofre de Respostas Confirmadas e exige aprovação explícita do candidato antes de qualquer envio.
 
 ---
 
@@ -11,82 +11,56 @@ Aplicação web desenvolvida sob a estratégia **Personal First, SaaS Ready** pa
 | **Backend** | Java 21 + Spring Boot 3.5 |
 | **Frontend** | React 19 + TypeScript + Vite 7 |
 | **Banco de Dados** | PostgreSQL 16 + Spring Data JPA / Hibernate |
-| **Migrações** | Flyway (`V1__init_schema.sql`) |
+| **Migrações** | Flyway (`V1` a `V4`) |
 | **Extração de Currículo** | Apache PDFBox 3 (PDF) + Apache POI 5 (DOCX) |
 | **Estilização** | Tailwind CSS 4 + Lucide Icons |
 | **Testes** | JUnit 5 + Mockito + Spring MockMvc (Backend) / Vitest + Testing Library (Frontend) |
 
 ---
 
-## Pré-requisitos
+## Funcionalidades Implementadas (Etapas 1 a 6)
 
-- **Java 21** (`java -version`)
-- **Apache Maven 3.8+** (`mvn -version`)
-- **Node.js 20+ / 24+** (`node -v`)
-- **PostgreSQL 16** (via Docker Compose ou instalação local)
+1. **Etapa 1 — Currículo e Perfil Estruturado com Evidências:** Upload de PDF/DOCX, extração local, estruturação por IA sem inventar qualificações, editor manual completo e confirmação explícita do perfil.
+2. **Etapa 2 — Integração com Plataformas de Emprego Reais:** Conectores oficiais para **Greenhouse**, **Lever**, **Gupy / Páginas de Carreiras (Schema.org JSON-LD)** e importação assistida por URL/descrição para **LinkedIn, Indeed, Glassdoor, Programathor, Revelo e InfoJobs**, com deduplicação SHA-256 (`fingerprint_hash`).
+3. **Etapa 3 — Motor de Compatibilidade (0 a 100%) e Painel de Oportunidades:** Avaliação multicritério explicável (pontos positivos, pontos de atenção, requisitos atendidos e não atendidos) sem eliminar vagas por requisitos desejáveis, acompanhada de 9 filtros avançados.
+4. **Etapa 4 — Preenchimento Inteligente e Cofre do Candidato (`candidate_qa_vault`):** Autopreenchimento de formulários exclusivamente com dados confirmados e detecção automática de perguntas adicionais ausentes (`missingQuestions`).
+5. **Etapa 5 — Tela de Revisão Final e Aprovação Explícita:** Botões **CANDIDATAR-SE** (exige confirmação humana explícita, gera recibo auditável e registra data/hora) e **CANCELAR** (interrompe sem enviar dados, mantendo rascunho ou descartando).
+6. **Etapa 6 — Acompanhamento (11 Status), Indicadores e Monitoramento Automático:** Gestão completa do processo seletivo pelos 11 status oficiais, 6 indicadores no Dashboard Principal e configuração de busca automática por cargos desejados.
 
 ---
 
-## Configuração e Execução Local
+## Como Executar Localmente
 
-### 1. Variáveis de Ambiente
-
-Copie o arquivo `.env.example` para `.env` na raiz do projeto e ajuste os parâmetros conforme seu ambiente:
-
+### 1. Banco de Dados PostgreSQL 16
 ```bash
-cp .env.example .env
+./infra/start-db.sh
 ```
+*(Ou via Docker Compose com `docker compose up -d`).*
 
-> **Nota sobre o Provedor de IA (`LlmClient`):**
-> - Caso `LLM_API_KEY` seja informada no `.env`, o sistema realizará chamadas estruturadas JSON ao endpoint compatível configurado em `LLM_API_URL` (ex.: Gemini OpenAI-compatible API ou OpenAI).
-> - Caso `LLM_API_KEY` esteja em branco, o backend utiliza automaticamente o analisador determinístico local (`DeterministicResumeAnalyzer`), extraindo dados e evidências literais diretamente do texto do currículo sem inventar informações.
-
-### 2. Banco de Dados PostgreSQL
-
-Suba o PostgreSQL com Docker Compose:
-
-```bash
-docker compose up -d
-```
-
-*(Alternativamente, se estiver usando PostgreSQL 16 local na porta configurada em `DB_PORT`, as migrações Flyway criarão automaticamente as tabelas `users`, `resumes`, `candidate_profiles` e `profile_evidences` na inicialização do backend).*
-
-### 3. Executar o Backend (Spring Boot)
-
+### 2. Backend (Spring Boot em `http://localhost:8080`)
 ```bash
 cd backend
 mvn spring-boot:run
 ```
 
-A API estará disponível em `http://localhost:8080` e o Swagger UI em `http://localhost:8080/swagger-ui.html`.
-
-### 4. Executar o Frontend (React + Vite)
-
-Em outro terminal:
-
+### 3. Frontend (React + Vite em `http://localhost:5173`)
 ```bash
 cd frontend
-npm install
 npm run dev
 ```
-
-A interface web estará disponível em `http://localhost:5173`.
 
 ---
 
 ## Executando os Testes Automatizados
 
-### Testes do Backend (JUnit 5 + Integração PostgreSQL/Flyway)
-
-```bash
-mvn -f backend/pom.xml test
-```
-
-### Testes do Frontend (Vitest + Testing Library)
-
-```bash
-npm --prefix frontend run test
-```
+- **Backend (15 testes JUnit 5 + Integração PostgreSQL/Flyway):**
+  ```bash
+  mvn -f backend/pom.xml test
+  ```
+- **Frontend (8 testes Vitest + Testing Library):**
+  ```bash
+  npm --prefix frontend run test
+  ```
 
 ---
 
@@ -95,4 +69,3 @@ npm --prefix frontend run test
 - [Arquitetura do Sistema](docs/architecture.md)
 - [Modelagem do Banco de Dados](docs/database.md)
 - [Contratos da API REST](docs/api.md)
-# CandidAUTO

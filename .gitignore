@@ -1,0 +1,24 @@
+.env
+.env.*
+!.env.example
+
+node_modules/
+dist/
+target/
+build/
+
+.idea/
+.vscode/
+*.iml
+
+# Currículos e arquivos pessoais
+storage/
+infra/storage/resumes/
+infra/postgres-data/
+uploads/
+*.pdf
+*.docx
+
+# Logs e arquivos temporários
+*.log
+.DS_Store
