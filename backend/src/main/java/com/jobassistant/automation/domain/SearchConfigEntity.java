@@ -41,7 +41,7 @@ public class SearchConfigEntity {
     private boolean autoMonitoringEnabled = true;
 
     @Column(name = "interval_minutes", nullable = false)
-    private int intervalMinutes = 60;
+    private int intervalMinutes = 1440;
 
     @Column(name = "last_run_at")
     private Instant lastRunAt;
@@ -71,7 +71,7 @@ public class SearchConfigEntity {
         this.desiredSeniorities = List.of("Júnior", "Pleno");
         this.minCompatibilityScore = 70;
         this.autoMonitoringEnabled = true;
-        this.intervalMinutes = 60;
+        this.intervalMinutes = 1440;
         this.updatedAt = Instant.now();
     }
 

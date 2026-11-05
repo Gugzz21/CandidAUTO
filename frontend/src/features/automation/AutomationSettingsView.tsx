@@ -45,7 +45,7 @@ export const AutomationSettingsView: React.FC<AutomationSettingsViewProps> = ({
   ]);
   const [minScore, setMinScore] = useState<number>(70);
   const [autoEnabled, setAutoEnabled] = useState<boolean>(true);
-  const [intervalMinutes, setIntervalMinutes] = useState<number>(60);
+  const [intervalMinutes, setIntervalMinutes] = useState<number>(1440);
 
   useEffect(() => {
     if (searchConfig) {
@@ -241,16 +241,49 @@ export const AutomationSettingsView: React.FC<AutomationSettingsViewProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300">
-              Intervalo de Varredura (minutos)
-            </label>
+            <div className="flex items-center justify-between">
+              <label className="block text-xs font-medium text-slate-300">
+                Frequência de Varredura
+              </label>
+              <span className="text-[11px] font-semibold text-indigo-300">
+                {intervalMinutes >= 1440
+                  ? 'Atualização Diária (a cada 24h)'
+                  : intervalMinutes >= 60
+                  ? `A cada ${Math.round(intervalMinutes / 60)}h (${intervalMinutes} min)`
+                  : `A cada ${intervalMinutes} min`}
+              </span>
+            </div>
+
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {[
+                { label: '1 Hora', mins: 60 },
+                { label: '6 Horas', mins: 360 },
+                { label: '12 Horas', mins: 720 },
+                { label: 'Diário (24h)', mins: 1440 },
+              ].map((preset) => (
+                <button
+                  key={preset.mins}
+                  type="button"
+                  onClick={() => setIntervalMinutes(preset.mins)}
+                  className={`rounded-lg border px-2.5 py-1 text-[11px] font-medium transition ${
+                    intervalMinutes === preset.mins
+                      ? 'border-indigo-500 bg-indigo-600 text-white'
+                      : 'border-slate-800 bg-slate-950 text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
+
             <input
               type="number"
               min={15}
               max={1440}
               value={intervalMinutes}
               onChange={(e) => setIntervalMinutes(Number(e.target.value))}
-              className="mt-1.5 w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+              placeholder="Minutos personalizados (15 a 1440)"
+              className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
             />
           </div>
         </div>
