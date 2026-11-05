@@ -117,13 +117,13 @@ public class OpenAiCompatibleLlmClient implements LlmClient {
             String rawJson = extractJsonObjectString(contentNode.asText());
             AiStructuredProfileResponse parsed = objectMapper.readValue(rawJson, AiStructuredProfileResponse.class);
             return mergeWithDeterministicFallbackIfEmpty(parsed, resumeText);
-        } catch (FileProcessingException e) {
-            throw e;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new FileProcessingException("A chamada ao provedor de IA foi interrompida.", e);
-        } catch (IOException e) {
-            throw new FileProcessingException("Falha ao processar resposta estruturada do provedor de IA.", e);
+            log.warn("Chamada ao provedor de IA interrompida; acionando extrator determinístico de contingência.");
+            return deterministicAnalyzer.analyze(resumeText);
+        } catch (IOException | FileProcessingException e) {
+            log.warn("Indisponibilidade ou falha no provedor externo de IA ({}); acionando extrator determinístico baseado em evidências literais.", e.getMessage());
+            return deterministicAnalyzer.analyze(resumeText);
         }
     }
 

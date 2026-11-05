@@ -51,7 +51,19 @@ public class GreenhouseJobConnector implements JobSourceConnector {
 
     @Override
     public List<RawDiscoveredJob> fetchJobs(JobSourceEntity source) {
-        String token = extractBoardToken(source.getBoardIdentifier());
+        return fetchJobsSafely(source).jobs();
+    }
+
+    @Override
+    public ConnectorFetchResult fetchJobsSafely(JobSourceEntity source) {
+        return fetchBoardByToken(source.getBoardIdentifier(), source.getName());
+    }
+
+    public ConnectorFetchResult fetchBoardByToken(String rawIdentifier, String companyName) {
+        String token = extractBoardToken(rawIdentifier);
+        if (token.isBlank()) {
+            throw new BadRequestException("Identificador de board Greenhouse inválido.");
+        }
         String endpointUrl = baseApiUrl.endsWith("/")
                 ? baseApiUrl + token + "/jobs?content=true"
                 : baseApiUrl + "/" + token + "/jobs?content=true";
@@ -61,6 +73,7 @@ public class GreenhouseJobConnector implements JobSourceConnector {
                     .uri(URI.create(endpointUrl))
                     .timeout(Duration.ofSeconds(25))
                     .header("Accept", "application/json")
+                    .header("User-Agent", "CandidAUTO/1.0 (+Official-Greenhouse-Board-API)")
                     .GET()
                     .build();
 
@@ -72,7 +85,23 @@ public class GreenhouseJobConnector implements JobSourceConnector {
                 throw new FileProcessingException("A API da Greenhouse retornou HTTP " + response.statusCode() + ".");
             }
 
-            return parseGreenhouseJobsJson(response.body(), source.getName());
+            JsonNode root = objectMapper.readTree(response.body());
+            if (root == null || !root.isObject() || !root.has("jobs") || !root.get("jobs").isArray()) {
+                throw new FileProcessingException("Resposta inesperada da Greenhouse (payload sem array oficial 'jobs').");
+            }
+
+            List<RawDiscoveredJob> jobs = parseGreenhouseJobsNode(root.get("jobs"), companyName);
+            SyncOutcomeStatus outcome = jobs.isEmpty()
+                    ? SyncOutcomeStatus.SUCCESS_EMPTY_CONFIRMED
+                    : SyncOutcomeStatus.SUCCESS_WITH_RESULTS;
+            return new ConnectorFetchResult(
+                    jobs,
+                    true,
+                    outcome,
+                    endpointUrl,
+                    response.statusCode(),
+                    "API oficial Greenhouse validada"
+            );
         } catch (BadRequestException | FileProcessingException e) {
             throw e;
         } catch (InterruptedException e) {
@@ -89,7 +118,10 @@ public class GreenhouseJobConnector implements JobSourceConnector {
         if (!jobsNode.isArray()) {
             return List.of();
         }
+        return parseGreenhouseJobsNode(jobsNode, defaultCompanyName);
+    }
 
+    private List<RawDiscoveredJob> parseGreenhouseJobsNode(JsonNode jobsNode, String defaultCompanyName) {
         List<RawDiscoveredJob> results = new ArrayList<>();
         for (JsonNode jobNode : jobsNode) {
             String externalId = jobNode.path("id").asText("");

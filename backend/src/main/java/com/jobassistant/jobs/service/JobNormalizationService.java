@@ -44,10 +44,15 @@ public class JobNormalizationService {
     );
 
     public JobPostingEntity normalizeToEntity(UUID userId, UUID sourceId, RawDiscoveredJob raw) {
-        String cleanTitle = cleanSingleLine(raw.title());
-        String cleanCompany = cleanSingleLine(raw.companyName());
-        String cleanLocation = cleanSingleLine(raw.location());
+        String cleanTitle = truncate(cleanSingleLine(raw.title()), 250);
+        String cleanCompany = truncate(cleanSingleLine(raw.companyName()), 195);
+        String cleanLocation = truncate(cleanSingleLine(raw.location()), 250);
         String cleanDescription = stripHtmlToFormattedText(raw.descriptionRaw());
+        if (cleanDescription.isBlank()) {
+            cleanDescription = cleanTitle + " - " + cleanCompany;
+        }
+        String cleanUrl = truncate(raw.originalUrl() != null ? raw.originalUrl().trim() : "", 995);
+        String cleanExternalId = raw.externalId() != null ? truncate(raw.externalId().trim(), 250) : null;
 
         String fingerprint = computeFingerprint(cleanCompany, cleanTitle, cleanLocation);
 
@@ -56,18 +61,18 @@ public class JobNormalizationService {
                 userId,
                 sourceId,
                 fingerprint,
-                raw.externalId(),
+                cleanExternalId,
                 raw.platform(),
                 cleanCompany.isBlank() ? "Empresa não informada" : cleanCompany,
                 cleanTitle,
                 cleanDescription,
-                raw.originalUrl() != null ? raw.originalUrl().trim() : ""
+                cleanUrl
         );
 
         entity.setLocation(cleanLocation);
         entity.setWorkModality(resolveWorkModality(raw.explicitModality(), cleanTitle, cleanLocation, cleanDescription));
-        entity.setSeniority(resolveSeniority(raw.explicitSeniority(), cleanTitle, cleanDescription));
-        entity.setSalaryRange(resolveSalary(raw.salaryRange(), cleanDescription));
+        entity.setSeniority(truncate(resolveSeniority(raw.explicitSeniority(), cleanTitle, cleanDescription), 55));
+        entity.setSalaryRange(truncate(resolveSalary(raw.salaryRange(), cleanDescription), 155));
 
         List<String> techs = extractTechnologies(cleanTitle + "\n" + cleanDescription);
         entity.setTechnologies(techs);
@@ -85,11 +90,15 @@ public class JobNormalizationService {
 
     public void updateExistingEntity(JobPostingEntity existing, RawDiscoveredJob raw) {
         String cleanDescription = stripHtmlToFormattedText(raw.descriptionRaw());
-        existing.setDescriptionRaw(cleanDescription);
-        existing.setLocation(cleanSingleLine(raw.location()));
+        if (!cleanDescription.isBlank()) {
+            existing.setDescriptionRaw(cleanDescription);
+        } else {
+            cleanDescription = existing.getDescriptionRaw();
+        }
+        existing.setLocation(truncate(cleanSingleLine(raw.location()), 250));
         existing.setWorkModality(resolveWorkModality(raw.explicitModality(), existing.getTitle(), existing.getLocation(), cleanDescription));
-        existing.setSeniority(resolveSeniority(raw.explicitSeniority(), existing.getTitle(), cleanDescription));
-        existing.setSalaryRange(resolveSalary(raw.salaryRange(), cleanDescription));
+        existing.setSeniority(truncate(resolveSeniority(raw.explicitSeniority(), existing.getTitle(), cleanDescription), 55));
+        existing.setSalaryRange(truncate(resolveSalary(raw.salaryRange(), cleanDescription), 155));
 
         List<String> techs = extractTechnologies(existing.getTitle() + "\n" + cleanDescription);
         existing.setTechnologies(techs);
@@ -101,7 +110,7 @@ public class JobNormalizationService {
             existing.setApplicationQuestions(raw.applicationQuestions());
         }
         if (raw.originalUrl() != null && !raw.originalUrl().isBlank()) {
-            existing.setOriginalUrl(raw.originalUrl().trim());
+            existing.setOriginalUrl(truncate(raw.originalUrl().trim(), 995));
         }
         existing.setActive(true);
     }
@@ -285,6 +294,12 @@ public class JobNormalizationService {
     private String cleanSingleLine(String s) {
         if (s == null) return "";
         return s.replaceAll("\\s+", " ").trim();
+    }
+
+    private String truncate(String s, int maxLen) {
+        if (s == null) return "";
+        if (s.length() <= maxLen) return s;
+        return s.substring(0, maxLen).trim();
     }
 
     private String normalizeKey(String s) {

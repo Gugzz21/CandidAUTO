@@ -28,7 +28,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(properties = {
+        "app.scheduling.enabled=false",
+        "app.security.allow-test-user-header=true",
+        "app.storage.resumes-dir=/tmp/candidauto-test-resumes",
+        "CandidAUTO_API_KEY=",
+        "NVIDIA_API_KEY=",
+        "app.llm.api-key="
+})
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = PostgresUnixSocketBridge.class)
 class JobAssistantIntegrationTest {

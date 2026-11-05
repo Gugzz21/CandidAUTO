@@ -1,7 +1,10 @@
 package com.jobassistant.jobs.controller;
 
+import com.jobassistant.jobs.discovery.JobDiscoveryEngine;
 import com.jobassistant.jobs.domain.JobPlatform;
 import com.jobassistant.jobs.domain.WorkModality;
+import com.jobassistant.jobs.dto.AutomatedDiscoveryResponseDto;
+import com.jobassistant.jobs.dto.ConnectorDiagnosticDto;
 import com.jobassistant.jobs.dto.CreateJobSourceRequestDto;
 import com.jobassistant.jobs.dto.ImportJobRequestDto;
 import com.jobassistant.jobs.dto.JobPostingDto;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -30,9 +34,37 @@ import java.util.UUID;
 public class JobDiscoveryController {
 
     private final JobDiscoveryService discoveryService;
+    private final JobDiscoveryEngine discoveryEngine;
 
-    public JobDiscoveryController(JobDiscoveryService discoveryService) {
+    public JobDiscoveryController(
+            JobDiscoveryService discoveryService,
+            JobDiscoveryEngine discoveryEngine
+    ) {
         this.discoveryService = discoveryService;
+        this.discoveryEngine = discoveryEngine;
+    }
+
+    @GetMapping("/job-platforms")
+    public ResponseEntity<List<Map<String, Object>>> listPlatformsCapabilities() {
+        List<Map<String, Object>> platforms = Arrays.stream(JobPlatform.values())
+                .map(p -> Map.<String, Object>of(
+                        "platform", p.name(),
+                        "supportsAutomatedBoardSync", p.supportsAutomatedBoardSync(),
+                        "supportsPublicQueryDiscovery", p.supportsPublicQueryDiscovery(),
+                        "supportsAssistedImport", true
+                ))
+                .toList();
+        return ResponseEntity.ok(platforms);
+    }
+
+    @PostMapping("/jobs/discover")
+    public ResponseEntity<AutomatedDiscoveryResponseDto> runAutomatedDiscoveryNow() {
+        return ResponseEntity.ok(discoveryEngine.discoverJobsForCurrentUser());
+    }
+
+    @GetMapping("/jobs/diagnostics")
+    public ResponseEntity<List<ConnectorDiagnosticDto>> getLatestDiscoveryDiagnostics() {
+        return ResponseEntity.ok(discoveryEngine.getLatestDiagnosticsForCurrentUser());
     }
 
     @GetMapping("/job-sources")

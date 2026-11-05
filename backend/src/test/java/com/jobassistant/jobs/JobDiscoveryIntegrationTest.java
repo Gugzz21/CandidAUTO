@@ -26,7 +26,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(properties = {
+        "app.scheduling.enabled=false",
+        "app.security.allow-test-user-header=true"
+})
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = PostgresUnixSocketBridge.class)
 class JobDiscoveryIntegrationTest {

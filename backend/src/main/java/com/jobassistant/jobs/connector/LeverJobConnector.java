@@ -52,7 +52,19 @@ public class LeverJobConnector implements JobSourceConnector {
 
     @Override
     public List<RawDiscoveredJob> fetchJobs(JobSourceEntity source) {
-        String site = extractSiteIdentifier(source.getBoardIdentifier());
+        return fetchJobsSafely(source).jobs();
+    }
+
+    @Override
+    public ConnectorFetchResult fetchJobsSafely(JobSourceEntity source) {
+        return fetchBoardBySite(source.getBoardIdentifier(), source.getName());
+    }
+
+    public ConnectorFetchResult fetchBoardBySite(String rawIdentifier, String companyName) {
+        String site = extractSiteIdentifier(rawIdentifier);
+        if (site.isBlank()) {
+            throw new BadRequestException("Identificador de site Lever inválido.");
+        }
         String endpointUrl = (baseApiUrl.endsWith("/") ? baseApiUrl : baseApiUrl + "/") + site + "?mode=json";
 
         try {
@@ -60,6 +72,7 @@ public class LeverJobConnector implements JobSourceConnector {
                     .uri(URI.create(endpointUrl))
                     .timeout(Duration.ofSeconds(25))
                     .header("Accept", "application/json")
+                    .header("User-Agent", "CandidAUTO/1.0 (+Official-Lever-Postings-API)")
                     .GET()
                     .build();
 
@@ -74,7 +87,23 @@ public class LeverJobConnector implements JobSourceConnector {
                 throw new FileProcessingException("A API da Lever retornou HTTP " + response.statusCode() + ".");
             }
 
-            return parseLeverPostingsJson(response.body(), source.getName());
+            JsonNode root = objectMapper.readTree(response.body());
+            if (root == null || !root.isArray()) {
+                throw new FileProcessingException("Resposta inesperada da API Lever (payload não é um array JSON oficial).");
+            }
+
+            List<RawDiscoveredJob> jobs = parseLeverPostingsArray(root, companyName);
+            SyncOutcomeStatus outcome = jobs.isEmpty()
+                    ? SyncOutcomeStatus.SUCCESS_EMPTY_CONFIRMED
+                    : SyncOutcomeStatus.SUCCESS_WITH_RESULTS;
+            return new ConnectorFetchResult(
+                    jobs,
+                    true,
+                    outcome,
+                    endpointUrl,
+                    response.statusCode(),
+                    "API oficial Lever validada"
+            );
         } catch (BadRequestException | FileProcessingException e) {
             throw e;
         } catch (InterruptedException e) {
@@ -90,7 +119,10 @@ public class LeverJobConnector implements JobSourceConnector {
         if (!root.isArray()) {
             return List.of();
         }
+        return parseLeverPostingsArray(root, defaultCompanyName);
+    }
 
+    private List<RawDiscoveredJob> parseLeverPostingsArray(JsonNode root, String defaultCompanyName) {
         List<RawDiscoveredJob> results = new ArrayList<>();
         for (JsonNode node : root) {
             String externalId = node.path("id").asText("");

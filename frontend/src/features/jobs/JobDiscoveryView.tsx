@@ -13,8 +13,10 @@ import {
   Loader2,
   Link2,
   Search,
+  Sparkles,
 } from 'lucide-react';
 import type {
+  AutomatedDiscoveryResponseDto,
   CreateJobSourceRequestDto,
   ImportJobRequestDto,
   JobPlatform,
@@ -22,11 +24,15 @@ import type {
   JobSourceDto,
   WorkModality,
 } from '../../types/api';
+import { ConnectorDiagnosticsTable } from './ConnectorDiagnosticsTable';
 
 interface JobDiscoveryViewProps {
   sources: JobSourceDto[];
   jobs: JobPostingDto[];
   syncingSourceId: string | null;
+  isDiscoveringAutomatically?: boolean;
+  lastDiscoveryResult?: AutomatedDiscoveryResponseDto | null;
+  onDiscoverAutomatically?: () => Promise<void>;
   onCreateSource: (payload: CreateJobSourceRequestDto) => Promise<void>;
   onDeleteSource: (id: string) => Promise<void>;
   onSyncSource: (id: string) => Promise<void>;
@@ -45,6 +51,9 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
   sources,
   jobs,
   syncingSourceId,
+  isDiscoveringAutomatically = false,
+  lastDiscoveryResult = null,
+  onDiscoverAutomatically,
   onCreateSource,
   onDeleteSource,
   onSyncSource,
@@ -152,26 +161,77 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
         <div>
           <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-300">
             <Globe className="h-3.5 w-3.5" />
-            Etapa 2 • Motor de Descoberta & Conectores Reais
+            Etapa 2 • Job Discovery Engine & Conectores Reais
           </span>
           <h2 className="mt-2 text-lg font-semibold text-white">
-            Fontes de Emprego, Normalização e Deduplicação de Vagas
+            Descoberta Automática, Fontes Oficiais e Deduplicação de Vagas
           </h2>
           <p className="mt-1 text-sm text-slate-400">
-            Sincronize quadros públicos via API oficial (Greenhouse, Lever, Gupy / Career Pages JSON-LD) ou importe vagas assistidas do LinkedIn, Indeed, Programathor e Revelo.
+            Busque oportunidades automaticamente pelos seus cargos desejados (Gupy Portal Público, Remotive, Arbeitnow, Catálogo Greenhouse & Lever), sincronize quadros próprios ou importe links do LinkedIn e Indeed.
           </p>
         </div>
 
-        <button
-          type="button"
-          data-testid="toggle-import-job-btn"
-          onClick={() => setShowImportModal((v) => !v)}
-          className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-500"
-        >
-          <Link2 className="h-4 w-4" />
-          {showImportModal ? 'Fechar Importador' : 'Importar Vaga por Link'}
-        </button>
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
+          {onDiscoverAutomatically && (
+            <button
+              type="button"
+              data-testid="btn-auto-discover-jobs"
+              disabled={isDiscoveringAutomatically}
+              onClick={() => void onDiscoverAutomatically()}
+              className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 disabled:opacity-50"
+            >
+              {isDiscoveringAutomatically ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Sparkles className="h-4 w-4" />
+              )}
+              {isDiscoveringAutomatically
+                ? 'Pesquisando Vagas...'
+                : 'Descobrir Vagas Automaticamente'}
+            </button>
+          )}
+
+          <button
+            type="button"
+            data-testid="toggle-import-job-btn"
+            onClick={() => setShowImportModal((v) => !v)}
+            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-500"
+          >
+            <Link2 className="h-4 w-4" />
+            {showImportModal ? 'Fechar Importador' : 'Importar Vaga por Link'}
+          </button>
+        </div>
       </div>
+
+      {lastDiscoveryResult && (
+        <div className="space-y-4">
+          <div className="rounded-xl border border-emerald-800/60 bg-emerald-950/30 p-4 text-xs text-emerald-200">
+            <p className="font-semibold text-emerald-300">
+              Resultado da Descoberta Automática ({lastDiscoveryResult.queriesExecuted} consultas executadas):
+            </p>
+            <p className="mt-1">
+              {lastDiscoveryResult.newlyInserted} nova(s) vaga(s) relevante(s) adicionada(s),{' '}
+              {lastDiscoveryResult.updatedExisting} atualizada(s) e{' '}
+              {lastDiscoveryResult.filteredOutIrrelevant} vaga(s) descartada(s) por estarem fora do seu cargo/senioridade/modalidade.
+            </p>
+            {lastDiscoveryResult.activeProviders.length > 0 && (
+              <p className="mt-1 text-[11px] text-emerald-300/80">
+                Fontes consultadas: {lastDiscoveryResult.activeProviders.join(' • ')}
+              </p>
+            )}
+            {lastDiscoveryResult.warnings && lastDiscoveryResult.warnings.length > 0 && (
+              <div className="mt-2 rounded-lg border border-amber-500/40 bg-amber-950/40 p-2.5 text-[11px] text-amber-200">
+                <span className="font-semibold">Alertas de Conectores: </span>
+                {lastDiscoveryResult.warnings.join(' | ')}
+              </div>
+            )}
+          </div>
+
+          {lastDiscoveryResult.diagnostics && lastDiscoveryResult.diagnostics.length > 0 && (
+            <ConnectorDiagnosticsTable diagnostics={lastDiscoveryResult.diagnostics} />
+          )}
+        </div>
+      )}
 
       {/* Formulário de Importação Assistida (LinkedIn / Indeed / Gupy / Glassdoor / Programathor) */}
       {showImportModal && (
@@ -457,12 +517,14 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
             className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs text-white"
           >
             <option value="ALL">Todas as Plataformas</option>
+            <option value="GUPY">Gupy (Portal & Empresas)</option>
             <option value="GREENHOUSE">Greenhouse</option>
             <option value="LEVER">Lever</option>
-            <option value="GUPY">Gupy</option>
-            <option value="LINKEDIN">LinkedIn</option>
-            <option value="INDEED">Indeed</option>
+            <option value="REMOTIVE">Remotive (Global Remoto)</option>
+            <option value="ARBEITNOW">Arbeitnow</option>
             <option value="CAREER_PAGE">Páginas de Carreiras</option>
+            <option value="LINKEDIN">LinkedIn (Assistida)</option>
+            <option value="INDEED">Indeed (Assistida)</option>
           </select>
 
           <select

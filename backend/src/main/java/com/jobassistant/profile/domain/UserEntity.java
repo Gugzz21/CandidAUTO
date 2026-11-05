@@ -21,6 +21,9 @@ public class UserEntity {
     @Column(nullable = false, unique = true, length = 255)
     private String email;
 
+    @Column(name = "password_hash", length = 255)
+    private String passwordHash;
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
@@ -28,9 +31,14 @@ public class UserEntity {
     }
 
     public UserEntity(UUID id, String name, String email, Instant createdAt) {
+        this(id, name, email, null, createdAt);
+    }
+
+    public UserEntity(UUID id, String name, String email, String passwordHash, Instant createdAt) {
         this.id = id;
         this.name = name;
         this.email = email;
+        this.passwordHash = passwordHash;
         this.createdAt = createdAt;
     }
 
@@ -52,6 +60,14 @@ public class UserEntity {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     public Instant getCreatedAt() {

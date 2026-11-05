@@ -12,6 +12,8 @@ export type JobPlatform =
   | 'LEVER'
   | 'GUPY'
   | 'CAREER_PAGE'
+  | 'REMOTIVE'
+  | 'ARBEITNOW'
   | 'LINKEDIN'
   | 'INDEED'
   | 'GLASSDOOR'
@@ -36,6 +38,36 @@ export type ApplicationStatus =
   | 'VAGA_ENCERRADA';
 
 export type SubmissionMode = 'INTEGRACAO_AUTORIZADA' | 'FLUXO_ASSISTIDO';
+
+export type SyncOutcomeStatus =
+  | 'SUCCESS_WITH_RESULTS'
+  | 'SUCCESS_EMPTY_CONFIRMED'
+  | 'EXTRACTION_INCONCLUSIVE'
+  | 'PARSE_ERROR'
+  | 'HTTP_ERROR'
+  | 'NETWORK_ERROR';
+
+export interface ConnectorDiagnosticDto {
+  connectorName: string;
+  queriedUrl: string;
+  httpStatus: number | null;
+  outcomeStatus: SyncOutcomeStatus;
+  responseContainedJobs: boolean;
+  parsedCount: number;
+  discardedCount: number;
+  discardReasons: Record<string, number>;
+  savedNewCount: number;
+  updatedExistingCount: number;
+  errorMessage: string | null;
+  executedAt: string;
+}
+
+export interface AuthSessionResponseDto {
+  token: string;
+  userId: string;
+  name: string;
+  email: string;
+}
 
 export interface ResumeDto {
   id: string;
@@ -226,6 +258,22 @@ export interface SyncSourceResponseDto {
   updatedExisting: number;
   markedExpired: number;
   jobs: JobPostingDto[];
+  diagnostic?: ConnectorDiagnosticDto;
+}
+
+export interface AutomatedDiscoveryResponseDto {
+  queriesExecuted: number;
+  syncedUserSources: number;
+  rawCandidatesEvaluated: number;
+  relevantJobsMatched: number;
+  newlyInserted: number;
+  updatedExisting: number;
+  filteredOutIrrelevant: number;
+  failedSourcesOrQueries?: number;
+  activeProviders: string[];
+  warnings: string[];
+  diagnostics?: ConnectorDiagnosticDto[];
+  discoveredJobs: JobPostingDto[];
 }
 
 export interface ScoreBreakdownDto {
@@ -334,6 +382,7 @@ export interface SearchConfigDto {
   intervalMinutes: number;
   lastRunAt: string | null;
   lastRunSummary: string | null;
+  lastExecutionDiagnostics?: ConnectorDiagnosticDto[];
   updatedAt: string;
 }
 

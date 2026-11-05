@@ -1,0 +1,88 @@
+name: CandidAUTO CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  security-hygiene:
+    name: Security & Data Leak Guard
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Block tracked personal resumes (.pdf / .docx) or .env files
+        run: |
+          LEAKED_FILES=$(git ls-files "*.pdf" "*.docx" ".env" "**/.env")
+          if [ -n "$LEAKED_FILES" ]; then
+            echo "::error::Arquivos sensíveis ou currículos rastreados no Git detectados:"
+            echo "$LEAKED_FILES"
+            exit 1
+          fi
+          echo "Verificação de segurança aprovada: nenhum PDF, DOCX ou .env rastreado no Git."
+
+  backend-tests:
+    name: Backend JUnit & Integration Tests (Java 21 + PostgreSQL 16)
+    runs-on: ubuntu-latest
+    needs: security-hygiene
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: job_assistant
+          POSTGRES_USER: job_assistant
+          POSTGRES_PASSWORD: ci_ephemeral_db_password_2026
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Run Backend Maven Test Suite
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5433
+          DB_NAME: job_assistant
+          DB_USER: job_assistant
+          DB_PASSWORD: ci_ephemeral_db_password_2026
+          JWT_SECRET: ci-ephemeral-jwt-hmac-sha256-secret-key-candidauto-2026
+        run: mvn -B -f backend/pom.xml test
+
+  frontend-tests-and-build:
+    name: Frontend Vitest & Production Build (Node 20)
+    runs-on: ubuntu-latest
+    needs: security-hygiene
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Frontend Dependencies
+        run: npm --prefix frontend ci
+
+      - name: Run Frontend Automated Tests (Vitest)
+        run: npm --prefix frontend run test
+
+      - name: Build Production Frontend Bundle
+        run: npm --prefix frontend run build

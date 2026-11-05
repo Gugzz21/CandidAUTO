@@ -8,11 +8,12 @@ import com.jobassistant.automation.domain.SearchConfigRepository;
 import com.jobassistant.automation.dto.DashboardMetricsDto;
 import com.jobassistant.automation.dto.SearchConfigDto;
 import com.jobassistant.automation.dto.UpdateSearchConfigRequestDto;
+import com.jobassistant.jobs.connector.SyncOutcomeStatus;
+import com.jobassistant.jobs.discovery.JobDiscoveryEngine;
 import com.jobassistant.jobs.domain.JobPostingEntity;
 import com.jobassistant.jobs.domain.JobPostingRepository;
-import com.jobassistant.jobs.domain.JobSourceEntity;
-import com.jobassistant.jobs.domain.JobSourceRepository;
-import com.jobassistant.jobs.service.JobDiscoveryService;
+import com.jobassistant.jobs.dto.AutomatedDiscoveryResponseDto;
+import com.jobassistant.jobs.dto.ConnectorDiagnosticDto;
 import com.jobassistant.matching.domain.JobMatchAnalysisEntity;
 import com.jobassistant.matching.domain.JobMatchAnalysisRepository;
 import com.jobassistant.matching.service.JobMatchingEngineService;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -33,33 +35,30 @@ import java.util.stream.Collectors;
 public class AutomatedJobMonitoringService {
 
     private final SearchConfigRepository searchConfigRepository;
-    private final JobSourceRepository sourceRepository;
     private final JobPostingRepository jobRepository;
     private final JobMatchAnalysisRepository matchRepository;
     private final ApplicationRepository applicationRepository;
     private final CandidateProfileRepository profileRepository;
-    private final JobDiscoveryService discoveryService;
+    private final JobDiscoveryEngine jobDiscoveryEngine;
     private final JobMatchingEngineService matchingService;
     private final CurrentUserProvider currentUserProvider;
 
     public AutomatedJobMonitoringService(
             SearchConfigRepository searchConfigRepository,
-            JobSourceRepository sourceRepository,
             JobPostingRepository jobRepository,
             JobMatchAnalysisRepository matchRepository,
             ApplicationRepository applicationRepository,
             CandidateProfileRepository profileRepository,
-            JobDiscoveryService discoveryService,
+            JobDiscoveryEngine jobDiscoveryEngine,
             JobMatchingEngineService matchingService,
             CurrentUserProvider currentUserProvider
     ) {
         this.searchConfigRepository = searchConfigRepository;
-        this.sourceRepository = sourceRepository;
         this.jobRepository = jobRepository;
         this.matchRepository = matchRepository;
         this.applicationRepository = applicationRepository;
         this.profileRepository = profileRepository;
-        this.discoveryService = discoveryService;
+        this.jobDiscoveryEngine = jobDiscoveryEngine;
         this.matchingService = matchingService;
         this.currentUserProvider = currentUserProvider;
     }
@@ -97,30 +96,30 @@ public class AutomatedJobMonitoringService {
     @Transactional
     public SearchConfigDto runMonitoringCycleNow() {
         UUID userId = currentUserProvider.getCurrentUserId();
+        return runMonitoringCycleForUser(userId);
+    }
+
+    @Transactional
+    public SearchConfigDto runMonitoringCycleForUser(UUID userId) {
+        currentUserProvider.ensureUserExists(userId);
         SearchConfigEntity config = searchConfigRepository.findByUserId(userId)
                 .orElseGet(() -> searchConfigRepository.save(new SearchConfigEntity(UUID.randomUUID(), userId)));
 
-        List<JobSourceEntity> enabledSources = sourceRepository.findAllByUserIdOrderByCreatedAtDesc(userId)
-                .stream()
-                .filter(JobSourceEntity::isEnabled)
-                .toList();
+        // 1. Executar Job Discovery Engine com telemetria completa por conector/consulta
+        AutomatedDiscoveryResponseDto discovery = jobDiscoveryEngine.discoverJobsForUser(userId, config);
 
-        int syncedSources = 0;
-        for (JobSourceEntity src : enabledSources) {
-            try {
-                discoveryService.syncSource(src.getId());
-                syncedSources++;
-            } catch (RuntimeException ignored) {
-                // Fontes que falharem na rede não interrompem a análise das vagas já descobertas
-            }
-        }
+        Set<UUID> touchedJobIdsInCycle = discovery.discoveredJobs().stream()
+                .map(j -> j.id())
+                .collect(Collectors.toCollection(HashSet::new));
 
+        // 2. Avaliar compatibilidade de vagas novas e atualizadas (quando perfil estiver confirmado)
         Optional<CandidateProfileEntity> profileOpt = profileRepository.findByUserId(userId);
-        int newlyAnalyzed = 0;
+        int newlyOrReanalyzed = 0;
         int highMatchCount = 0;
-        int skippedAlreadyAppliedOrAnalyzed = 0;
+        int skippedAlreadyAppliedOrUnchanged = 0;
+        boolean profileConfirmed = profileOpt.isPresent() && profileOpt.get().isConfirmed();
 
-        if (profileOpt.isPresent()) {
+        if (profileConfirmed) {
             CandidateProfileEntity profile = profileOpt.get();
             Set<UUID> appliedJobIds = applicationRepository.findAllByUserIdOrderByUpdatedAtDesc(userId)
                     .stream()
@@ -138,12 +137,20 @@ public class AutomatedJobMonitoringService {
 
             for (JobPostingEntity job : activeJobs) {
                 if (appliedJobIds.contains(job.getId())) {
-                    skippedAlreadyAppliedOrAnalyzed++;
+                    skippedAlreadyAppliedOrUnchanged++;
                     continue;
                 }
+
                 Optional<JobMatchAnalysisEntity> existingMatch = matchRepository.findByUserIdAndJobId(userId, job.getId());
-                if (existingMatch.isPresent()) {
-                    skippedAlreadyAppliedOrAnalyzed++;
+                boolean profileUpdatedAfterMatch = existingMatch.isPresent()
+                        && profile.getUpdatedAt() != null
+                        && existingMatch.get().getAnalyzedAt() != null
+                        && profile.getUpdatedAt().isAfter(existingMatch.get().getAnalyzedAt());
+                boolean shouldAnalyze = existingMatch.isEmpty() || profileUpdatedAfterMatch
+                        || (touchedJobIdsInCycle.contains(job.getId()) && discovery.updatedExisting() > 0 && existingMatch.isEmpty());
+
+                if (!shouldAnalyze) {
+                    skippedAlreadyAppliedOrUnchanged++;
                     if (existingMatch.get().getCompatibilityScore() >= config.getMinCompatibilityScore()) {
                         highMatchCount++;
                     }
@@ -151,21 +158,48 @@ public class AutomatedJobMonitoringService {
                 }
 
                 JobMatchAnalysisEntity analysis = matchingService.computeAndSaveMatch(userId, profile, job);
-                newlyAnalyzed++;
+                newlyOrReanalyzed++;
                 if (analysis.getCompatibilityScore() >= config.getMinCompatibilityScore()) {
                     highMatchCount++;
                 }
             }
         }
 
-        config.setLastRunAt(Instant.now());
-        config.setLastRunSummary(
-                "Ciclo concluído: " + syncedSources + " fonte(s) sincronizada(s), "
-                        + newlyAnalyzed + " nova(s) vaga(s) analisada(s) pela IA, "
-                        + highMatchCount + " oportunidade(s) com compatibilidade >= " + config.getMinCompatibilityScore() + "% "
-                        + "(" + skippedAlreadyAppliedOrAnalyzed + " já analisadas/candidatadas ignoradas para evitar repetição)."
-        );
+        List<ConnectorDiagnosticDto> diags = discovery.diagnostics();
+        long successWithResults = diags.stream().filter(d -> d.outcomeStatus() == SyncOutcomeStatus.SUCCESS_WITH_RESULTS).count();
+        long emptyResults = diags.stream().filter(d -> d.outcomeStatus() == SyncOutcomeStatus.SUCCESS_EMPTY_CONFIRMED
+                || d.outcomeStatus() == SyncOutcomeStatus.EXTRACTION_INCONCLUSIVE).count();
+        long failedResults = diags.stream().filter(d -> d.outcomeStatus() == SyncOutcomeStatus.HTTP_ERROR
+                || d.outcomeStatus() == SyncOutcomeStatus.NETWORK_ERROR
+                || d.outcomeStatus() == SyncOutcomeStatus.PARSE_ERROR).count();
 
+        config.setLastRunAt(Instant.now());
+        config.setLastExecutionDiagnostics(diags);
+
+        StringBuilder summary = new StringBuilder();
+        summary.append("Ciclo concluído [")
+                .append(successWithResults).append(" fonte(s)/consulta(s) com vagas, ")
+                .append(emptyResults).append(" sem resultados, ")
+                .append(failedResults).append(" com falha]: ")
+                .append(discovery.newlyInserted()).append(" nova(s) vaga(s) relevante(s), ")
+                .append(discovery.updatedExisting()).append(" atualizada(s), ")
+                .append(discovery.filteredOutIrrelevant()).append(" descartada(s) pelos filtros. ");
+
+        if (profileConfirmed) {
+            summary.append(newlyOrReanalyzed).append(" vaga(s) analisada(s) pela IA, ")
+                    .append(highMatchCount).append(" com compatibilidade >= ")
+                    .append(config.getMinCompatibilityScore()).append("% (")
+                    .append(skippedAlreadyAppliedOrUnchanged).append(" inalteradas/candidatadas mantidas).");
+        } else {
+            summary.append("Confirme seu Perfil Profissional na aba 'Validação' para calcular a compatibilidade.");
+        }
+
+        if (!discovery.warnings().isEmpty()) {
+            summary.append(" Falhas registradas: ")
+                    .append(String.join(" | ", discovery.warnings().stream().limit(3).toList()));
+        }
+
+        config.setLastRunSummary(summary.toString());
         return toDto(searchConfigRepository.save(config));
     }
 
@@ -227,6 +261,7 @@ public class AutomatedJobMonitoringService {
                 entity.getIntervalMinutes(),
                 entity.getLastRunAt(),
                 entity.getLastRunSummary(),
+                entity.getLastExecutionDiagnostics(),
                 entity.getUpdatedAt()
         );
     }

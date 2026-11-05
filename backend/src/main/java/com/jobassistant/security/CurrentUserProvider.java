@@ -3,20 +3,23 @@ package com.jobassistant.security;
 import com.jobassistant.profile.domain.UserEntity;
 import com.jobassistant.profile.repository.UserRepository;
 import com.jobassistant.shared.BadRequestException;
-import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Resolve a identidade do usuário exclusivamente a partir do contexto autenticado do Spring Security
+ * (nunca confiando diretamente em cabeçalhos não autenticados enviados pelo cliente).
+ */
 @Component
 public class CurrentUserProvider {
 
     public static final UUID DEFAULT_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
-    public static final String USER_ID_HEADER = "X-User-Id";
 
     private final UserRepository userRepository;
 
@@ -26,33 +29,31 @@ public class CurrentUserProvider {
 
     @Transactional
     public UUID getCurrentUserId() {
-        UUID resolvedId = resolveFromRequestHeader();
-        if (!userRepository.existsById(resolvedId)) {
-            String email = resolvedId.equals(DEFAULT_USER_ID)
-                    ? "candidato@jobassistant.local"
-                    : "user-" + resolvedId + "@jobassistant.local";
-            String name = resolvedId.equals(DEFAULT_USER_ID)
-                    ? "Candidato Principal (Personal First)"
-                    : "Usuário " + resolvedId.toString().substring(0, 8);
-            userRepository.save(new UserEntity(resolvedId, name, email, Instant.now()));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("Usuário não autenticado no contexto da requisição.");
         }
-        return resolvedId;
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof AuthenticatedUserPrincipal authUser) {
+            return ensureUserExists(authUser.userId());
+        }
+        throw new AccessDeniedException("Principal de autenticação inválido.");
     }
 
-    private UUID resolveFromRequestHeader() {
-        ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if (attrs == null) {
-            return DEFAULT_USER_ID;
+    @Transactional
+    public UUID ensureUserExists(UUID userId) {
+        if (userId == null) {
+            throw new BadRequestException("Identificador de usuário não pode ser nulo.");
         }
-        HttpServletRequest request = attrs.getRequest();
-        String header = request.getHeader(USER_ID_HEADER);
-        if (header == null || header.isBlank()) {
-            return DEFAULT_USER_ID;
+        if (!userRepository.existsById(userId)) {
+            String email = userId.equals(DEFAULT_USER_ID)
+                    ? "candidato@jobassistant.local"
+                    : "user-" + userId + "@jobassistant.local";
+            String name = userId.equals(DEFAULT_USER_ID)
+                    ? "Candidato Principal (Personal First)"
+                    : "Usuário " + userId.toString().substring(0, 8);
+            userRepository.save(new UserEntity(userId, name, email, Instant.now()));
         }
-        try {
-            return UUID.fromString(header.trim());
-        } catch (IllegalArgumentException e) {
-            throw new BadRequestException("Cabeçalho X-User-Id inválido: deve ser um UUID válido.");
-        }
+        return userId;
     }
 }

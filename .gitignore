@@ -13,12 +13,11 @@ build/
 
 # Currículos e arquivos pessoais
 /storage/
-infra/storage/resumes/
-infra/postgres-data/
+**/infra/storage/
+**/infra/postgres-data/
 /uploads/
-/infra/storage/**/*.pdf
-/infra/storage/**/*.docx
 
 # Logs e arquivos temporários
 *.log
+*.tsbuildinfo
 .DS_Store

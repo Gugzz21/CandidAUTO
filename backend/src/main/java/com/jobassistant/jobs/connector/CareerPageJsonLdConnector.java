@@ -23,7 +23,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Conector para páginas oficiais de carreiras (Schema.org JobPosting JSON-LD) e portais públicos da Gupy.
+ * Conector para páginas oficiais de carreiras com dados estruturados (Schema.org JobPosting JSON-LD e __NEXT_DATA__).
+ * Registra código HTTP, URL consultada e erros de interpretação (sem ocultar falhas de parsing).
  */
 @Component
 public class CareerPageJsonLdConnector implements JobSourceConnector {
@@ -51,27 +52,78 @@ public class CareerPageJsonLdConnector implements JobSourceConnector {
 
     @Override
     public boolean supports(JobPlatform platform) {
-        return platform == JobPlatform.CAREER_PAGE || platform == JobPlatform.GUPY;
+        return platform == JobPlatform.CAREER_PAGE;
     }
 
     @Override
     public List<RawDiscoveredJob> fetchJobs(JobSourceEntity source) {
+        return fetchJobsSafely(source).jobs();
+    }
+
+    @Override
+    public ConnectorFetchResult fetchJobsSafely(JobSourceEntity source) {
         String targetUrl = resolveUrl(source);
+        return fetchStructuredResultFromUrl(targetUrl, source.getPlatform(), source.getName());
+    }
+
+    public List<RawDiscoveredJob> fetchStructuredJobsFromUrl(
+            String targetUrl,
+            JobPlatform platform,
+            String defaultCompany
+    ) {
+        return fetchStructuredResultFromUrl(targetUrl, platform, defaultCompany).jobs();
+    }
+
+    public ConnectorFetchResult fetchStructuredResultFromUrl(
+            String targetUrl,
+            JobPlatform platform,
+            String defaultCompany
+    ) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(targetUrl))
                     .timeout(Duration.ofSeconds(25))
                     .header("Accept", "text/html,application/xhtml+xml,application/json")
-                    .header("User-Agent", "JobAssistantBot/0.2 (+PersonalFirst-CareerPageReader)")
+                    .header("User-Agent", "CandidAUTO/1.0 (+Structured-CareerPage-Reader)")
                     .GET()
                     .build();
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() < 200 || response.statusCode() >= 300) {
-                throw new FileProcessingException("A página de carreiras retornou HTTP " + response.statusCode() + ".");
+                throw new FileProcessingException("A página de carreiras (" + targetUrl + ") retornou HTTP " + response.statusCode() + ".");
             }
 
-            return parseHtmlForStructuredJobs(response.body(), source.getPlatform(), source.getName(), targetUrl);
+            StructuredHtmlParseReport report = inspectAndParseHtml(response.body(), platform, defaultCompany, targetUrl);
+            if (!report.jobs().isEmpty()) {
+                return new ConnectorFetchResult(
+                        report.jobs(),
+                        false,
+                        SyncOutcomeStatus.SUCCESS_WITH_RESULTS,
+                        targetUrl,
+                        response.statusCode(),
+                        "Extraídas " + report.jobs().size() + " vaga(s) estruturada(s)"
+                );
+            }
+
+            if (report.parseErrorsCount() > 0) {
+                return new ConnectorFetchResult(
+                        List.of(),
+                        false,
+                        SyncOutcomeStatus.PARSE_ERROR,
+                        targetUrl,
+                        response.statusCode(),
+                        "Falha ao interpretar " + report.parseErrorsCount() + " bloco(s) JSON estruturado(s) na página (" + report.lastParseError() + ")"
+                );
+            }
+
+            return new ConnectorFetchResult(
+                    List.of(),
+                    false,
+                    SyncOutcomeStatus.EXTRACTION_INCONCLUSIVE,
+                    targetUrl,
+                    response.statusCode(),
+                    "HTTP " + response.statusCode() + " recebido, mas sem blocos Schema.org JobPosting ou __NEXT_DATA__ (vagas anteriores preservadas)"
+            );
         } catch (BadRequestException | FileProcessingException e) {
             throw e;
         } catch (InterruptedException e) {
@@ -88,7 +140,22 @@ public class CareerPageJsonLdConnector implements JobSourceConnector {
             String defaultCompany,
             String pageUrl
     ) {
+        return inspectAndParseHtml(html, platform, defaultCompany, pageUrl).jobs();
+    }
+
+    public StructuredHtmlParseReport inspectAndParseHtml(
+            String html,
+            JobPlatform platform,
+            String defaultCompany,
+            String pageUrl
+    ) {
         List<RawDiscoveredJob> discovered = new ArrayList<>();
+        if (html == null || html.isBlank()) {
+            return new StructuredHtmlParseReport(discovered, 0, "");
+        }
+
+        int parseErrors = 0;
+        String lastError = "";
 
         // 1. Extrair dados estruturados Schema.org JobPosting (application/ld+json)
         Matcher ldMatcher = JSON_LD_SCRIPT.matcher(html);
@@ -97,36 +164,53 @@ public class CareerPageJsonLdConnector implements JobSourceConnector {
             try {
                 JsonNode node = objectMapper.readTree(jsonContent);
                 collectJobPostingsFromJsonLd(node, platform, defaultCompany, pageUrl, discovered);
-            } catch (IOException ignored) {
+            } catch (IOException ex) {
+                parseErrors++;
+                lastError = "JSON-LD malformado: " + ex.getMessage();
             }
         }
 
-        // 2. Extrair dados estruturados públicos __NEXT_DATA__ (comum em portais Gupy públicos)
+        // 2. Extrair dados estruturados públicos __NEXT_DATA__ (portais Next.js / Gupy)
         Matcher nextMatcher = NEXT_DATA_SCRIPT.matcher(html);
         while (nextMatcher.find()) {
             String jsonContent = nextMatcher.group(1).trim();
             try {
                 JsonNode root = objectMapper.readTree(jsonContent);
-                JsonNode jobsArray = root.path("props").path("pageProps").path("jobs");
+                JsonNode pageProps = root.path("props").path("pageProps");
+                JsonNode jobsArray = pageProps.path("jobs");
+                if (!jobsArray.isArray()) {
+                    jobsArray = pageProps.path("initialState").path("jobs").path("list");
+                }
                 if (jobsArray.isArray()) {
                     for (JsonNode job : jobsArray) {
                         String id = job.path("id").asText("");
-                        String title = job.path("name").asText("").trim();
+                        String title = firstNonBlank(job, "name", "title");
                         if (title.isEmpty()) continue;
                         String city = job.path("city").asText("");
                         String state = job.path("state").asText("");
                         String location = (city + (state.isBlank() ? "" : " - " + state)).trim();
                         String workplaceType = job.path("workplaceType").asText("").toLowerCase(Locale.ROOT);
-                        WorkModality modality = workplaceType.contains("remote") ? WorkModality.REMOTO
+                        boolean isRemoteFlag = job.path("isRemoteWork").asBoolean(false);
+                        WorkModality modality = (isRemoteFlag || workplaceType.contains("remote")) ? WorkModality.REMOTO
                                 : workplaceType.contains("hybrid") ? WorkModality.HIBRIDO
                                 : workplaceType.contains("on-site") ? WorkModality.PRESENCIAL : null;
-                        String jobUrl = job.path("jobUrl").asText(pageUrl);
-                        String desc = job.path("description").asText(title + " - " + defaultCompany);
+                        String jobUrl = firstNonBlank(job, "jobUrl", "url");
+                        if (jobUrl.isBlank()) {
+                            jobUrl = pageUrl;
+                        }
+                        String company = firstNonBlank(job, "careerPageName", "companyName");
+                        if (company.isBlank()) {
+                            company = defaultCompany;
+                        }
+                        String desc = job.path("description").asText("");
+                        if (desc.isBlank()) {
+                            desc = title + " - " + company;
+                        }
 
                         discovered.add(new RawDiscoveredJob(
                                 id,
                                 platform,
-                                defaultCompany,
+                                company,
                                 title,
                                 desc,
                                 location,
@@ -139,11 +223,13 @@ public class CareerPageJsonLdConnector implements JobSourceConnector {
                         ));
                     }
                 }
-            } catch (IOException ignored) {
+            } catch (IOException ex) {
+                parseErrors++;
+                lastError = "__NEXT_DATA__ malformado: " + ex.getMessage();
             }
         }
 
-        return discovered;
+        return new StructuredHtmlParseReport(discovered, parseErrors, lastError);
     }
 
     private void collectJobPostingsFromJsonLd(
@@ -224,10 +310,23 @@ public class CareerPageJsonLdConnector implements JobSourceConnector {
         if (id.startsWith("http://") || id.startsWith("https://")) {
             return id;
         }
-        if (source.getPlatform() == JobPlatform.GUPY) {
-            String cleanSubdomain = id.replaceAll("[^a-zA-Z0-9\\-]", "");
-            return "https://" + cleanSubdomain + ".gupy.io";
-        }
         throw new BadRequestException("Para páginas de carreiras, informe uma URL completa iniciando com https://");
+    }
+
+    private String firstNonBlank(JsonNode node, String... fields) {
+        for (String field : fields) {
+            String val = node.path(field).asText("").trim();
+            if (!val.isEmpty()) {
+                return val;
+            }
+        }
+        return "";
+    }
+
+    public record StructuredHtmlParseReport(
+            List<RawDiscoveredJob> jobs,
+            int parseErrorsCount,
+            String lastParseError
+    ) {
     }
 }

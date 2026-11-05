@@ -8,6 +8,7 @@ public record SyncSourceResponseDto(
         int newlyInserted,
         int updatedExisting,
         int markedExpired,
-        List<JobPostingDto> jobs
+        List<JobPostingDto> jobs,
+        ConnectorDiagnosticDto diagnostic
 ) {
 }

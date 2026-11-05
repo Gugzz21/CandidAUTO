@@ -1,5 +1,6 @@
 package com.jobassistant.automation.domain;
 
+import com.jobassistant.jobs.dto.ConnectorDiagnosticDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -47,6 +48,10 @@ public class SearchConfigEntity {
 
     @Column(name = "last_run_summary", columnDefinition = "TEXT")
     private String lastRunSummary;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "last_execution_diagnostics", columnDefinition = "jsonb", nullable = false)
+    private List<ConnectorDiagnosticDto> lastExecutionDiagnostics = List.of();
 
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt = Instant.now();
@@ -147,6 +152,15 @@ public class SearchConfigEntity {
 
     public void setLastRunSummary(String lastRunSummary) {
         this.lastRunSummary = lastRunSummary;
+        this.updatedAt = Instant.now();
+    }
+
+    public List<ConnectorDiagnosticDto> getLastExecutionDiagnostics() {
+        return lastExecutionDiagnostics != null ? lastExecutionDiagnostics : List.of();
+    }
+
+    public void setLastExecutionDiagnostics(List<ConnectorDiagnosticDto> lastExecutionDiagnostics) {
+        this.lastExecutionDiagnostics = lastExecutionDiagnostics != null ? lastExecutionDiagnostics : List.of();
         this.updatedAt = Instant.now();
     }
 

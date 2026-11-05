@@ -26,6 +26,7 @@ vi.mock('../services/api', () => ({
     createJobSource: vi.fn(),
     deleteJobSource: vi.fn(),
     syncJobSource: vi.fn(),
+    discoverJobsAutomatically: vi.fn(),
     importJob: vi.fn(),
     listJobs: vi.fn(),
     updateJobAvailability: vi.fn(),
@@ -214,6 +215,22 @@ const mockSearchConfig: SearchConfigDto = {
   intervalMinutes: 60,
   lastRunAt: '2026-11-05T15:10:00Z',
   lastRunSummary: 'Ciclo concluído: 1 vaga analisada com alta compatibilidade.',
+  lastExecutionDiagnostics: [
+    {
+      connectorName: "Gupy ('Desenvolvedor Full Stack')",
+      queriedUrl: 'https://portal.api.gupy.io/api/v1/jobs?jobName=Desenvolvedor+Full+Stack&limit=25',
+      httpStatus: 200,
+      outcomeStatus: 'SUCCESS_WITH_RESULTS',
+      responseContainedJobs: true,
+      parsedCount: 3,
+      discardedCount: 2,
+      discardReasons: { SENIORIDADE_INCOMPATIVEL: 2 },
+      savedNewCount: 1,
+      updatedExistingCount: 0,
+      errorMessage: '',
+      executedAt: '2026-11-05T15:10:00Z',
+    },
+  ],
   updatedAt: '2026-11-05T15:10:00Z',
 };
 
@@ -387,6 +404,55 @@ describe('Job Assistant Frontend — Plataforma Completa (Etapas 1 a 6)', () => 
     await waitFor(() => {
       expect(jobAssistantApi.importJob).toHaveBeenCalled();
       expect(screen.getByText('Desenvolvedor Back-end Júnior')).toBeDefined();
+    });
+  });
+
+  it('deve acionar o Job Discovery Engine na aba Vagas sem exigir cadastro manual de empresas', async () => {
+    vi.mocked(jobAssistantApi.discoverJobsAutomatically).mockResolvedValue({
+      queriesExecuted: 6,
+      syncedUserSources: 0,
+      failedSourcesOrQueries: 0,
+      rawCandidatesEvaluated: 18,
+      relevantJobsMatched: 4,
+      newlyInserted: 4,
+      updatedExisting: 0,
+      filteredOutIrrelevant: 14,
+      activeProviders: ['Gupy Portal Público', 'Remotive Public API', 'Catálogo Curado (Greenhouse & Lever)'],
+      warnings: [],
+      diagnostics: [
+        {
+          connectorName: "Gupy ('Desenvolvedor Full Stack')",
+          queriedUrl: 'https://portal.api.gupy.io/api/v1/jobs?jobName=Desenvolvedor+Full+Stack&limit=25',
+          httpStatus: 200,
+          outcomeStatus: 'SUCCESS_WITH_RESULTS',
+          responseContainedJobs: true,
+          parsedCount: 3,
+          discardedCount: 2,
+          discardReasons: { SENIORIDADE_INCOMPATIVEL: 2 },
+          savedNewCount: 1,
+          updatedExistingCount: 0,
+          errorMessage: '',
+          executedAt: '2026-11-05T15:10:00Z',
+        },
+      ],
+      discoveredJobs: [mockJob],
+    });
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(jobAssistantApi.listJobs).toHaveBeenCalled();
+    });
+
+    fireEvent.click(screen.getByTestId('nav-jobs'));
+    fireEvent.click(screen.getByTestId('btn-auto-discover-jobs'));
+
+    await waitFor(() => {
+      expect(jobAssistantApi.discoverJobsAutomatically).toHaveBeenCalled();
+      expect(screen.getByText(/Resultado da Descoberta Automática/i)).toBeDefined();
+      expect(screen.getByText(/Fontes consultadas:.*Remotive Public API/i)).toBeDefined();
+      expect(screen.getByTestId('connector-diagnostics-table')).toBeDefined();
+      expect(screen.getByText(/SENIORIDADE_INCOMPATIVEL: 2/i)).toBeDefined();
     });
   });
 

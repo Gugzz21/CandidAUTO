@@ -12,6 +12,7 @@ import type {
   SearchConfigDto,
   UpdateSearchConfigRequestDto,
 } from '../../types/api';
+import { ConnectorDiagnosticsTable } from '../jobs/ConnectorDiagnosticsTable';
 
 interface AutomationSettingsViewProps {
   searchConfig: SearchConfigDto | null;
@@ -98,7 +99,7 @@ export const AutomationSettingsView: React.FC<AutomationSettingsViewProps> = ({
             Configurações de Pesquisa e Automação
           </h1>
           <p className="mt-1 text-sm text-slate-400">
-            Configure os cargos que você procura para que a IA sincronize fontes periodicamente, avalie a compatibilidade e evite recomendar vagas repetidas ou já candidatadas.
+            O agendador em segundo plano executa periodicamente o Job Discovery Engine conforme o intervalo configurado, consultando APIs públicas (Gupy Portal Público, Remotive, Arbeitnow, Catálogo Greenhouse & Lever) e suas fontes cadastradas com filtragem automática por cargo, modalidade e senioridade.
           </p>
         </div>
 
@@ -117,14 +118,30 @@ export const AutomationSettingsView: React.FC<AutomationSettingsViewProps> = ({
       </div>
 
       {searchConfig?.lastRunSummary && (
-        <div className="flex items-start gap-3 rounded-xl border border-emerald-800/60 bg-emerald-950/30 p-4 text-xs text-emerald-200">
-          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
-          <div>
-            <p className="font-semibold">Último Ciclo de Monitoramento:</p>
-            <p className="mt-0.5 text-emerald-300/90">
-              {searchConfig.lastRunSummary}
-            </p>
+        <div className="space-y-4">
+          <div className="flex items-start gap-3 rounded-xl border border-emerald-800/60 bg-emerald-950/30 p-4 text-xs text-emerald-200">
+            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+            <div>
+              <p className="font-semibold">
+                Último Ciclo de Monitoramento
+                {searchConfig.lastRunAt
+                  ? ` (${new Date(searchConfig.lastRunAt).toLocaleString('pt-BR')})`
+                  : ''}
+                :
+              </p>
+              <p className="mt-0.5 text-emerald-300/90">
+                {searchConfig.lastRunSummary}
+              </p>
+            </div>
           </div>
+
+          {searchConfig.lastExecutionDiagnostics &&
+            searchConfig.lastExecutionDiagnostics.length > 0 && (
+              <ConnectorDiagnosticsTable
+                diagnostics={searchConfig.lastExecutionDiagnostics}
+                title="Telemetria do Último Ciclo Automático"
+              />
+            )}
         </div>
       )}
 

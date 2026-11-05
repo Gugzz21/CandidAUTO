@@ -1,5 +1,7 @@
 package com.jobassistant.profile.service;
 
+import com.jobassistant.automation.domain.SearchConfigEntity;
+import com.jobassistant.automation.domain.SearchConfigRepository;
 import com.jobassistant.profile.domain.CandidateProfileEntity;
 import com.jobassistant.profile.domain.ProfileEvidenceEntity;
 import com.jobassistant.profile.dto.CandidateProfileDto;
@@ -26,17 +28,20 @@ public class ProfileService {
     private final CandidateProfileRepository profileRepository;
     private final ProfileEvidenceRepository evidenceRepository;
     private final ResumeRepository resumeRepository;
+    private final SearchConfigRepository searchConfigRepository;
     private final CurrentUserProvider currentUserProvider;
 
     public ProfileService(
             CandidateProfileRepository profileRepository,
             ProfileEvidenceRepository evidenceRepository,
             ResumeRepository resumeRepository,
+            SearchConfigRepository searchConfigRepository,
             CurrentUserProvider currentUserProvider
     ) {
         this.profileRepository = profileRepository;
         this.evidenceRepository = evidenceRepository;
         this.resumeRepository = resumeRepository;
+        this.searchConfigRepository = searchConfigRepository;
         this.currentUserProvider = currentUserProvider;
     }
 
@@ -100,6 +105,20 @@ public class ProfileService {
                 resume.setStatus(ResumeStatus.CONFIRMED);
                 resumeRepository.save(resume);
             });
+        }
+
+        // Inicializar configuração de monitoramento automático com os cargos e senioridade confirmados (se ainda não existir)
+        if (searchConfigRepository.findByUserId(userId).isEmpty()) {
+            SearchConfigEntity autoConfig = new SearchConfigEntity(UUID.randomUUID(), userId);
+            if (saved.getTargetRoles() != null && !saved.getTargetRoles().isEmpty()) {
+                autoConfig.setDesiredRoles(saved.getTargetRoles());
+            } else if (saved.getHeadline() != null && !saved.getHeadline().isBlank()) {
+                autoConfig.setDesiredRoles(List.of(saved.getHeadline().trim()));
+            }
+            if (saved.getSeniorityLevel() != null && !saved.getSeniorityLevel().isBlank()) {
+                autoConfig.setDesiredSeniorities(List.of(saved.getSeniorityLevel().trim()));
+            }
+            searchConfigRepository.save(autoConfig);
         }
 
         return toDto(saved);

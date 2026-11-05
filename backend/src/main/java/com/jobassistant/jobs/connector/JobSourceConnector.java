@@ -13,4 +13,9 @@ public interface JobSourceConnector {
     boolean supports(JobPlatform platform);
 
     List<RawDiscoveredJob> fetchJobs(JobSourceEntity source);
+
+    default ConnectorFetchResult fetchJobsSafely(JobSourceEntity source) {
+        List<RawDiscoveredJob> jobs = fetchJobs(source);
+        return new ConnectorFetchResult(jobs, !jobs.isEmpty(), "");
+    }
 }

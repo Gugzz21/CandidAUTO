@@ -15,6 +15,7 @@ import {
 import type {
   AnswerMissingQuestionsRequestDto,
   ApplicationDto,
+  AutomatedDiscoveryResponseDto,
   CancelApplicationRequestDto,
   CandidateProfileDto,
   CreateJobSourceRequestDto,
@@ -66,6 +67,10 @@ export const App: React.FC = () => {
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [isConfirmingProfile, setIsConfirmingProfile] = useState(false);
   const [syncingSourceId, setSyncingSourceId] = useState<string | null>(null);
+  const [isDiscoveringAutomatically, setIsDiscoveringAutomatically] =
+    useState(false);
+  const [lastDiscoveryResult, setLastDiscoveryResult] =
+    useState<AutomatedDiscoveryResponseDto | null>(null);
   const [isMatchingAll, setIsMatchingAll] = useState(false);
   const [preparingJobId, setPreparingJobId] = useState<string | null>(null);
   const [isSavingAutomation, setIsSavingAutomation] = useState(false);
@@ -239,6 +244,30 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleDiscoverAutomatically = async () => {
+    setIsDiscoveringAutomatically(true);
+    setGlobalError(null);
+    try {
+      const discoveryRes = await jobAssistantApi.discoverJobsAutomatically();
+      setLastDiscoveryResult(discoveryRes);
+      const [refreshedJobs, refreshedSources] = await Promise.all([
+        jobAssistantApi.listJobs(),
+        jobAssistantApi.listJobSources(),
+      ]);
+      setJobs(refreshedJobs);
+      setSources(refreshedSources);
+      await refreshOpportunitiesAndApplications();
+    } catch (err) {
+      setGlobalError(
+        err instanceof Error
+          ? err.message
+          : 'Erro ao executar descoberta automática de vagas.'
+      );
+    } finally {
+      setIsDiscoveringAutomatically(false);
+    }
+  };
+
   const handleImportJob = async (payload: ImportJobRequestDto) => {
     setGlobalError(null);
     try {
@@ -396,8 +425,12 @@ export const App: React.FC = () => {
     try {
       const updated = await jobAssistantApi.runMonitoringNow();
       setSearchConfig(updated);
-      const refreshedJobs = await jobAssistantApi.listJobs();
+      const [refreshedJobs, refreshedSources] = await Promise.all([
+        jobAssistantApi.listJobs(),
+        jobAssistantApi.listJobSources(),
+      ]);
       setJobs(refreshedJobs);
+      setSources(refreshedSources);
       await refreshOpportunitiesAndApplications();
     } catch (err) {
       setGlobalError(
@@ -557,6 +590,9 @@ export const App: React.FC = () => {
             sources={sources}
             jobs={jobs}
             syncingSourceId={syncingSourceId}
+            isDiscoveringAutomatically={isDiscoveringAutomatically}
+            lastDiscoveryResult={lastDiscoveryResult}
+            onDiscoverAutomatically={handleDiscoverAutomatically}
             onCreateSource={handleCreateSource}
             onDeleteSource={handleDeleteSource}
             onSyncSource={handleSyncSource}
