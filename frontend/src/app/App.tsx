@@ -41,6 +41,7 @@ import { JobDiscoveryView } from '../features/jobs/JobDiscoveryView';
 import { OpportunitiesDashboardView } from '../features/opportunities/OpportunitiesDashboardView';
 import { ApplicationsCenterView } from '../features/applications/ApplicationsCenterView';
 import { AutomationSettingsView } from '../features/automation/AutomationSettingsView';
+import logoCandidAuto from '../features/images/Logo CandidAUTO.png';
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<NavTabId>('dashboard');
@@ -428,17 +429,19 @@ export const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
       {/* Topbar SaaS */}
-      <header className="sticky top-0 z-30 border-b border-slate-800/80 bg-slate-950/90 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3.5 sm:px-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 font-bold text-white shadow-sm">
-              CA
-            </div>
-            <div>
-              <span className="text-base font-semibold tracking-tight text-white">
+      <header className="sticky top-0 z-30 border-b border-slate-800/80 bg-slate-950/95 backdrop-blur">
+        <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
+          <div className="flex shrink-0 items-center gap-3">
+            <img
+              src={logoCandidAuto}
+              alt="Logo CandidAUTO"
+              className="h-10 w-10 rounded-xl bg-white p-0.5 object-contain shadow-sm ring-1 ring-slate-700/60"
+            />
+            <div className="flex flex-col">
+              <span className="text-base font-bold leading-tight tracking-tight text-white">
                 CandidAUTO
               </span>
-              <span className="ml-2 hidden rounded-md border border-slate-800 bg-slate-900 px-2 py-0.5 text-[11px] font-medium text-slate-400 sm:inline-block">
+              <span className="mt-0.5 hidden rounded-md border border-slate-800 bg-slate-900 px-2 py-0.5 text-[10px] font-medium text-slate-400 2xl:inline-block">
                 v1.0 • Plataforma Completa
               </span>
             </div>
@@ -446,7 +449,7 @@ export const App: React.FC = () => {
 
           <nav
             aria-label="Navegação principal"
-            className="flex items-center gap-1 overflow-x-auto"
+            className="no-scrollbar flex flex-1 items-center justify-center gap-1 overflow-x-auto py-1 xl:gap-1.5"
           >
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -457,13 +460,13 @@ export const App: React.FC = () => {
                   type="button"
                   data-testid={`nav-${item.id}`}
                   onClick={() => setActiveTab(item.id)}
-                  className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-medium transition ${
+                  className={`inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl px-2.5 py-2 text-xs font-medium transition xl:px-3.5 ${
                     isActive
                       ? 'bg-indigo-600 text-white shadow-sm'
                       : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200'
                   }`}
                 >
-                  <Icon className="h-3.5 w-3.5" />
+                  <Icon className="h-3.5 w-3.5 shrink-0" />
                   <span>{item.label}</span>
                 </button>
               );
@@ -474,7 +477,7 @@ export const App: React.FC = () => {
             type="button"
             onClick={() => void loadInitialData()}
             title="Recarregar dados"
-            className="rounded-lg border border-slate-800 bg-slate-900 p-2 text-slate-400 hover:text-white"
+            className="shrink-0 rounded-lg border border-slate-800 bg-slate-900 p-2 text-slate-400 transition hover:border-slate-700 hover:text-white"
           >
             <RefreshCw
               className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`}
@@ -484,7 +487,7 @@ export const App: React.FC = () => {
       </header>
 
       {/* Conteúdo Principal */}
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      <main className="mx-auto w-full max-w-[1600px] px-4 py-8 sm:px-6 lg:px-8">
         {globalError && (
           <div
             role="alert"

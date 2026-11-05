@@ -1,1 +1,11 @@
 @import "tailwindcss";
+
+/* Ocultar barras de rolagem horizontais na navegação sem perder acessibilidade */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
