@@ -3,7 +3,7 @@
 /* ==========================================================================
    TQEP — identidade visual
    Terminal de controle escuro, técnico e calmo.
-   Paleta principal: Base #0B1426 e Sinal Violeta #8F00FF.
+   Paleta principal: Base #0B1426 e Sinal Roxo #5B1166.
    ========================================================================== */
 
 :root {
@@ -22,8 +22,8 @@
   --sg-border: #1E3156;
   --sg-border-strong: #2E4675;
 
-  /* Sinal (violeta) — usar em menos de 10% da tela */
-  --sg-signal: #8F00FF;
+  /* Sinal (roxo) — usar em menos de 10% da tela */
+  --sg-signal: #5B1166;
   --sg-signal-ink: #f1f0ec;
 
   /* Semânticas */
@@ -51,7 +51,7 @@
   --color-white: #f1f0ec;
   --color-black: #0B1426;
 
-  --color-signal: #8F00FF;
+  --color-signal: #5B1166;
   --color-signal-ink: #f1f0ec;
   --color-sidebar: #070D1A;
 
@@ -69,27 +69,27 @@
   --color-slate-900: #101C35;
   --color-slate-950: #0B1426;
 
-  /* indigo -> sinal violeta #8F00FF (ação primária) */
-  --color-indigo-50: color-mix(in oklch, #8F00FF 20%, #f1f0ec);
-  --color-indigo-100: color-mix(in oklch, #8F00FF 40%, #f1f0ec);
-  --color-indigo-200: color-mix(in oklch, #8F00FF 40%, #f1f0ec);
-  --color-indigo-300: color-mix(in oklch, #8F00FF 55%, #f1f0ec);
-  --color-indigo-400: color-mix(in oklch, #8F00FF 70%, #f1f0ec);
-  --color-indigo-500: color-mix(in oklch, #8F00FF 82%, #f1f0ec);
-  --color-indigo-600: #8F00FF;
-  --color-indigo-700: color-mix(in oklch, #8F00FF 55%, #0B1426);
-  --color-indigo-800: color-mix(in oklch, #8F00FF 32%, #0B1426);
-  --color-indigo-900: color-mix(in oklch, #8F00FF 24%, #0B1426);
-  --color-indigo-950: color-mix(in oklch, #8F00FF 14%, #0B1426);
+  /* indigo -> sinal roxo #5B1166 (ação primária) */
+  --color-indigo-50: color-mix(in oklch, #5B1166 20%, #f1f0ec);
+  --color-indigo-100: color-mix(in oklch, #5B1166 40%, #f1f0ec);
+  --color-indigo-200: color-mix(in oklch, #5B1166 40%, #f1f0ec);
+  --color-indigo-300: color-mix(in oklch, #5B1166 55%, #f1f0ec);
+  --color-indigo-400: color-mix(in oklch, #5B1166 70%, #f1f0ec);
+  --color-indigo-500: color-mix(in oklch, #5B1166 82%, #f1f0ec);
+  --color-indigo-600: #5B1166;
+  --color-indigo-700: color-mix(in oklch, #5B1166 55%, #0B1426);
+  --color-indigo-800: color-mix(in oklch, #5B1166 32%, #0B1426);
+  --color-indigo-900: color-mix(in oklch, #5B1166 24%, #0B1426);
+  --color-indigo-950: color-mix(in oklch, #5B1166 14%, #0B1426);
 
-  /* purple -> sinal violeta #8F00FF (destaque de IA) */
-  --color-purple-200: color-mix(in oklch, #8F00FF 40%, #f1f0ec);
-  --color-purple-300: color-mix(in oklch, #8F00FF 55%, #f1f0ec);
-  --color-purple-400: color-mix(in oklch, #8F00FF 70%, #f1f0ec);
-  --color-purple-500: #8F00FF;
-  --color-purple-800: color-mix(in oklch, #8F00FF 32%, #0B1426);
-  --color-purple-900: color-mix(in oklch, #8F00FF 18%, #0B1426);
-  --color-purple-950: color-mix(in oklch, #8F00FF 9%, #0B1426);
+  /* purple -> sinal roxo #5B1166 (destaque de IA) */
+  --color-purple-200: color-mix(in oklch, #5B1166 40%, #f1f0ec);
+  --color-purple-300: color-mix(in oklch, #5B1166 55%, #f1f0ec);
+  --color-purple-400: color-mix(in oklch, #5B1166 70%, #f1f0ec);
+  --color-purple-500: #5B1166;
+  --color-purple-800: color-mix(in oklch, #5B1166 32%, #0B1426);
+  --color-purple-900: color-mix(in oklch, #5B1166 18%, #0B1426);
+  --color-purple-950: color-mix(in oklch, #5B1166 9%, #0B1426);
 
   /* emerald -> sucesso */
   --color-emerald-100: color-mix(in oklch, #59d38c 40%, #f1f0ec);
