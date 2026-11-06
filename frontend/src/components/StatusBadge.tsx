@@ -3,48 +3,62 @@ import type { ResumeStatus } from '../types/api';
 
 const STATUS_CONFIG: Record<
   ResumeStatus,
-  { label: string; className: string }
+  { label: string; className: string; dot: string; live?: boolean }
 > = {
   UPLOADED: {
     label: 'Enviado',
-    className: 'bg-slate-800 text-slate-300 border-slate-700',
+    className: 'border-slate-700 text-slate-300',
+    dot: 'bg-slate-400',
   },
   EXTRACTING: {
-    label: 'Extraindo texto...',
-    className: 'bg-sky-950/70 text-sky-300 border-sky-800',
+    label: 'Extraindo texto',
+    className: 'border-sky-800 text-sky-300',
+    dot: 'bg-sky-400',
+    live: true,
   },
   EXTRACTED: {
     label: 'Texto extraído',
-    className: 'bg-indigo-950/70 text-indigo-300 border-indigo-800',
+    className: 'border-slate-700 text-slate-200',
+    dot: 'bg-sky-400',
   },
   ANALYZING: {
-    label: 'Analisando com IA...',
-    className: 'bg-purple-950/70 text-purple-300 border-purple-800',
+    label: 'IA analisando',
+    className: 'border-indigo-800 text-indigo-300',
+    dot: 'bg-indigo-400',
+    live: true,
   },
   REVIEW_REQUIRED: {
     label: 'Revisão necessária',
-    className: 'bg-amber-950/70 text-amber-300 border-amber-800',
+    className: 'border-amber-800 text-amber-300',
+    dot: 'bg-amber-400',
   },
   CONFIRMED: {
     label: 'Confirmado',
-    className: 'bg-emerald-950/70 text-emerald-300 border-emerald-800',
+    className: 'border-emerald-800 text-emerald-300',
+    dot: 'bg-emerald-400',
   },
   FAILED: {
     label: 'Falha no processamento',
-    className: 'bg-rose-950/70 text-rose-300 border-rose-800',
+    className: 'border-rose-800 text-rose-300',
+    dot: 'bg-rose-400',
   },
 };
 
 export const StatusBadge: React.FC<{ status: ResumeStatus }> = ({ status }) => {
   const cfg = STATUS_CONFIG[status] ?? {
     label: status,
-    className: 'bg-slate-800 text-slate-300 border-slate-700',
+    className: 'border-slate-700 text-slate-300',
+    dot: 'bg-slate-400',
   };
   return (
     <span
       data-testid={`status-badge-${status}`}
-      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${cfg.className}`}
+      className={`inline-flex items-center gap-1.5 rounded-md border bg-slate-950/60 px-2 py-0.5 font-mono text-xs font-medium uppercase tracking-[0.06em] ${cfg.className}`}
     >
+      <span
+        aria-hidden="true"
+        className={`h-1.5 w-1.5 rounded-full ${cfg.dot} ${cfg.live ? 'animate-live' : ''}`}
+      />
       {cfg.label}
     </span>
   );

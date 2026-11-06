@@ -1,5 +1,303 @@
 @import "tailwindcss";
 
+/* ==========================================================================
+   TQEP — identidade visual
+   Terminal de controle escuro, técnico e calmo.
+   Paleta principal: Base #0B1426 e Sinal Violeta #8F00FF.
+   ========================================================================== */
+
+:root {
+  /* Superfícies */
+  --sg-bg: #0B1426;
+  --sg-sidebar: #070D1A;
+  --sg-surface-1: #0F1A30;
+  --sg-surface-2: #14223E;
+  --sg-surface-3: #1B2C4F;
+
+  /* Texto */
+  --sg-text: #f1f0ec;
+  --sg-text-muted: #8d939a;
+
+  /* Bordas (sempre 1px) */
+  --sg-border: #1E3156;
+  --sg-border-strong: #2E4675;
+
+  /* Sinal (violeta) — usar em menos de 10% da tela */
+  --sg-signal: #8F00FF;
+  --sg-signal-ink: #f1f0ec;
+
+  /* Semânticas */
+  --sg-success: #59d38c;
+  --sg-warning: #fcb442;
+  --sg-danger: #f4514f;
+  --sg-info: #59c8e8;
+
+  color-scheme: dark;
+}
+
+@theme {
+  /* Tipografia: papéis fixos */
+  --font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Raios: base 8px, cards 16px */
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 8px;
+  --radius-2xl: 16px;
+
+  /* Cores base */
+  --color-white: #f1f0ec;
+  --color-black: #0B1426;
+
+  --color-signal: #8F00FF;
+  --color-signal-ink: #f1f0ec;
+  --color-sidebar: #070D1A;
+
+  /* Neutros (#0B1426 azul-marinho nobre) */
+  --color-slate-50: #f7f6f3;
+  --color-slate-100: #f1f0ec;
+  --color-slate-200: #dddcd7;
+  --color-slate-300: #b8bbbe;
+  --color-slate-400: #8d939a;
+  --color-slate-500: #6b768e;
+  --color-slate-600: #45639E;
+  --color-slate-700: #2E487A;
+  --color-slate-800: #1E3156;
+  --color-slate-850: #162544;
+  --color-slate-900: #101C35;
+  --color-slate-950: #0B1426;
+
+  /* indigo -> sinal violeta #8F00FF (ação primária) */
+  --color-indigo-50: color-mix(in oklch, #8F00FF 20%, #f1f0ec);
+  --color-indigo-100: color-mix(in oklch, #8F00FF 40%, #f1f0ec);
+  --color-indigo-200: color-mix(in oklch, #8F00FF 40%, #f1f0ec);
+  --color-indigo-300: color-mix(in oklch, #8F00FF 55%, #f1f0ec);
+  --color-indigo-400: color-mix(in oklch, #8F00FF 70%, #f1f0ec);
+  --color-indigo-500: color-mix(in oklch, #8F00FF 82%, #f1f0ec);
+  --color-indigo-600: #8F00FF;
+  --color-indigo-700: color-mix(in oklch, #8F00FF 55%, #0B1426);
+  --color-indigo-800: color-mix(in oklch, #8F00FF 32%, #0B1426);
+  --color-indigo-900: color-mix(in oklch, #8F00FF 24%, #0B1426);
+  --color-indigo-950: color-mix(in oklch, #8F00FF 14%, #0B1426);
+
+  /* purple -> sinal violeta #8F00FF (destaque de IA) */
+  --color-purple-200: color-mix(in oklch, #8F00FF 40%, #f1f0ec);
+  --color-purple-300: color-mix(in oklch, #8F00FF 55%, #f1f0ec);
+  --color-purple-400: color-mix(in oklch, #8F00FF 70%, #f1f0ec);
+  --color-purple-500: #8F00FF;
+  --color-purple-800: color-mix(in oklch, #8F00FF 32%, #0B1426);
+  --color-purple-900: color-mix(in oklch, #8F00FF 18%, #0B1426);
+  --color-purple-950: color-mix(in oklch, #8F00FF 9%, #0B1426);
+
+  /* emerald -> sucesso */
+  --color-emerald-100: color-mix(in oklch, #59d38c 40%, #f1f0ec);
+  --color-emerald-200: color-mix(in oklch, #59d38c 60%, #f1f0ec);
+  --color-emerald-300: color-mix(in oklch, #59d38c 85%, #f1f0ec);
+  --color-emerald-400: #59d38c;
+  --color-emerald-500: #59d38c;
+  --color-emerald-600: color-mix(in oklch, #59d38c 85%, #0B1426);
+  --color-emerald-700: color-mix(in oklch, #59d38c 55%, #0B1426);
+  --color-emerald-800: color-mix(in oklch, #59d38c 32%, #0B1426);
+  --color-emerald-900: color-mix(in oklch, #59d38c 18%, #0B1426);
+  --color-emerald-950: color-mix(in oklch, #59d38c 9%, #0B1426);
+
+  /* amber -> alerta */
+  --color-amber-100: color-mix(in oklch, #fcb442 40%, #f1f0ec);
+  --color-amber-200: color-mix(in oklch, #fcb442 60%, #f1f0ec);
+  --color-amber-300: color-mix(in oklch, #fcb442 85%, #f1f0ec);
+  --color-amber-400: #fcb442;
+  --color-amber-500: #fcb442;
+  --color-amber-600: color-mix(in oklch, #fcb442 88%, #0B1426);
+  --color-amber-700: color-mix(in oklch, #fcb442 55%, #0B1426);
+  --color-amber-800: color-mix(in oklch, #fcb442 32%, #0B1426);
+  --color-amber-900: color-mix(in oklch, #fcb442 18%, #0B1426);
+  --color-amber-950: color-mix(in oklch, #fcb442 9%, #0B1426);
+
+  /* rose -> erro */
+  --color-rose-100: color-mix(in oklch, #f4514f 40%, #f1f0ec);
+  --color-rose-200: color-mix(in oklch, #f4514f 60%, #f1f0ec);
+  --color-rose-300: color-mix(in oklch, #f4514f 85%, #f1f0ec);
+  --color-rose-400: #f4514f;
+  --color-rose-500: #f4514f;
+  --color-rose-600: color-mix(in oklch, #f4514f 88%, #0B1426);
+  --color-rose-700: color-mix(in oklch, #f4514f 55%, #0B1426);
+  --color-rose-800: color-mix(in oklch, #f4514f 32%, #0B1426);
+  --color-rose-900: color-mix(in oklch, #f4514f 18%, #0B1426);
+  --color-rose-950: color-mix(in oklch, #f4514f 9%, #0B1426);
+
+  /* sky -> info */
+  --color-sky-200: color-mix(in oklch, #59c8e8 60%, #f1f0ec);
+  --color-sky-300: color-mix(in oklch, #59c8e8 85%, #f1f0ec);
+  --color-sky-400: #59c8e8;
+  --color-sky-500: #59c8e8;
+  --color-sky-800: color-mix(in oklch, #59c8e8 32%, #0B1426);
+  --color-sky-900: color-mix(in oklch, #59c8e8 18%, #0B1426);
+  --color-sky-950: color-mix(in oklch, #59c8e8 9%, #0B1426);
+
+  /* Movimento: 150–250ms, sem bounce */
+  --ease-signal: cubic-bezier(0.2, 0, 0, 1);
+  --animate-enter: sg-enter 220ms var(--ease-signal) both;
+  --animate-live: sg-live 1.6s ease-in-out infinite;
+
+  @keyframes sg-enter {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes sg-live {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.35;
+    }
+  }
+}
+
+@layer base {
+  html,
+  body {
+    background-color: var(--sg-bg);
+    color: var(--sg-text);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-variant-numeric: tabular-nums;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  ::selection {
+    background: color-mix(in oklch, var(--sg-signal) 35%, transparent);
+    color: var(--sg-text);
+  }
+
+  *,
+  ::before,
+  ::after {
+    border-color: var(--sg-border);
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    transition-duration: 180ms;
+    transition-timing-function: var(--ease-signal);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-indigo-400);
+    outline-offset: 2px;
+  }
+
+  input,
+  select,
+  textarea {
+    color-scheme: dark;
+  }
+
+  /* Ícones Lucide: traço 1.75 */
+  svg.lucide {
+    stroke-width: 1.75;
+  }
+
+  input[type="range"],
+  input[type="checkbox"],
+  input[type="radio"] {
+    accent-color: var(--sg-signal);
+  }
+
+  ::placeholder {
+    color: #6b768e;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--sg-border);
+    border: 2px solid var(--sg-bg);
+    border-radius: 8px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--sg-border-strong);
+  }
+}
+
+/* Rótulo "eyebrow": mono, caixa alta, 12px, tracking 0.08em */
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Dados numéricos */
+@utility num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* Sombra de card: fio de luz interno a 4% + sombra suave de baixo */
+@utility shadow-card {
+  box-shadow:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.04),
+    0 1px 2px 0 rgb(0 0 0 / 0.35),
+    0 12px 24px -16px rgb(0 0 0 / 0.6);
+}
+
+/* Grade de fundo: linhas de 1px a 3% de branco, quadrícula de 32px */
+@utility bg-grid {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Todo card (rounded-2xl com borda) recebe a sombra padrão da marca */
+@layer components {
+  .rounded-2xl.border {
+    box-shadow:
+      inset 0 1px 0 0 rgb(255 255 255 / 0.04),
+      0 1px 2px 0 rgb(0 0 0 / 0.35),
+      0 12px 24px -16px rgb(0 0 0 / 0.6);
+  }
+}
+
+/* Texto sobre o violeta é sempre claro (contraste AA) */
+.bg-indigo-600,
+.bg-indigo-500,
+.bg-signal {
+  color: var(--sg-signal-ink);
+}
+
 /* Ocultar barras de rolagem horizontais na navegação sem perder acessibilidade */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
@@ -8,4 +306,14 @@
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
 }

@@ -27,18 +27,18 @@ export const ValidationConfirmView: React.FC<ValidationConfirmViewProps> = ({
     return (
       <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-8 text-center">
         <AlertTriangle className="mx-auto h-10 w-10 text-amber-400" />
-        <h2 className="mt-3 text-lg font-semibold text-white">
+        <h2 className="mt-3 text-xl font-semibold text-white">
           Perfil incompleto para validação
         </h2>
-        <p className="mt-1 text-sm text-slate-400">
+        <p className="mt-1 text-base text-slate-400">
           Importe seu currículo ou preencha seu nome completo na aba "Perfil" antes de confirmar os dados.
         </p>
         <button
           type="button"
           onClick={onGoToEdit}
-          className="mt-4 inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500"
+          className="mt-4 inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-base font-medium text-signal-ink hover:bg-indigo-500"
         >
-          <Edit3 className="h-4 w-4" />
+          <Edit3 className="h-[18px] w-[18px]" />
           Preencher Perfil
         </button>
       </div>
@@ -63,14 +63,14 @@ export const ValidationConfirmView: React.FC<ValidationConfirmViewProps> = ({
       <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-300">
-              <ShieldCheck className="h-3.5 w-3.5" />
+            <span className="eyebrow inline-flex items-center gap-2 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-emerald-300">
+              <ShieldCheck className="h-4 w-4" />
               Aprovação Explícita do Candidato
             </span>
-            <h2 className="mt-2 text-lg font-semibold text-white">
+            <h2 className="mt-2 text-xl font-semibold text-white">
               Revisão Final e Confirmação do Perfil
             </h2>
-            <p className="mt-1 text-sm text-slate-400">
+            <p className="mt-1 text-base text-slate-400">
               Ao confirmar, você atesta que os dados abaixo são verdadeiros e autoriza sua utilização na etapa futura de análise de compatibilidade e preenchimento assistido.
             </p>
           </div>
@@ -79,7 +79,7 @@ export const ValidationConfirmView: React.FC<ValidationConfirmViewProps> = ({
             <button
               type="button"
               onClick={onGoToEdit}
-              className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-200 hover:bg-slate-700"
+              className="rounded-xl border border-slate-700 bg-slate-850 px-4 py-2.5 text-base font-medium text-slate-200 hover:bg-slate-700"
             >
               Voltar e Editar
             </button>
@@ -88,12 +88,12 @@ export const ValidationConfirmView: React.FC<ValidationConfirmViewProps> = ({
               data-testid="confirm-profile-btn"
               disabled={isConfirming || profile.confirmed}
               onClick={handleConfirm}
-              className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-500 disabled:opacity-60"
+              className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-base font-semibold text-signal-ink transition hover:bg-indigo-500 disabled:opacity-60"
             >
               {isConfirming ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="h-[18px] w-[18px] animate-spin" />
               ) : (
-                <CheckCircle2 className="h-4 w-4" />
+                <CheckCircle2 className="h-[18px] w-[18px]" />
               )}
               {profile.confirmed
                 ? 'Perfil Confirmado'
@@ -105,9 +105,9 @@ export const ValidationConfirmView: React.FC<ValidationConfirmViewProps> = ({
         {profile.confirmed && (
           <div
             data-testid="profile-confirmed-banner"
-            className="mt-4 flex items-center gap-2 rounded-xl border border-emerald-700/70 bg-emerald-950/50 px-4 py-3 text-sm text-emerald-200"
+            className="mt-4 flex items-center gap-2 rounded-xl border border-emerald-700/70 bg-emerald-950/50 px-4 py-3 text-base text-emerald-200"
           >
-            <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
+            <CheckCircle2 className="h-[18px] w-[18px] shrink-0 text-emerald-400" />
             <span>
               Perfil profissional confirmado e validado com sucesso!
               {profile.confirmedAt
@@ -120,7 +120,7 @@ export const ValidationConfirmView: React.FC<ValidationConfirmViewProps> = ({
         {errorMsg && (
           <div
             role="alert"
-            className="mt-4 rounded-xl border border-rose-800 bg-rose-950/50 px-4 py-3 text-sm text-rose-200"
+            className="mt-4 rounded-xl border border-rose-800 bg-rose-950/50 px-4 py-3 text-base text-rose-200"
           >
             {errorMsg}
           </div>
@@ -129,13 +129,13 @@ export const ValidationConfirmView: React.FC<ValidationConfirmViewProps> = ({
 
       {pendingReviews.length > 0 && !profile.confirmed && (
         <div className="rounded-xl border border-amber-700/60 bg-amber-950/30 p-4">
-          <div className="flex items-center gap-2 text-sm font-semibold text-amber-300">
-            <AlertTriangle className="h-4 w-4" />
+          <div className="flex items-center gap-2 text-base font-semibold text-amber-300">
+            <AlertTriangle className="h-[18px] w-[18px]" />
             <span>
               Existem {pendingReviews.length} campo(s) marcados para atenção antes da confirmação:
             </span>
           </div>
-          <ul className="mt-2 list-inside list-disc space-y-1 text-xs text-amber-200/90">
+          <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-amber-200/90">
             {pendingReviews.map((item) => (
               <li key={item.id}>
                 <strong>{item.fieldLabel}:</strong> {item.evidenceText}
@@ -148,18 +148,18 @@ export const ValidationConfirmView: React.FC<ValidationConfirmViewProps> = ({
       {/* Resumo consolidado do Perfil */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+          <h3 className="eyebrow text-slate-400">
             Dados do Candidato
           </h3>
-          <p className="mt-2 text-xl font-bold text-white">{profile.fullName}</p>
-          <p className="text-sm text-indigo-400">
+          <p className="mt-2 text-2xl font-bold text-white">{profile.fullName}</p>
+          <p className="text-base text-indigo-400">
             {profile.headline || 'Título não informado'} •{' '}
             {profile.seniorityLevel || 'Senioridade não informada'}
           </p>
-          <p className="mt-3 text-xs leading-relaxed text-slate-300">
+          <p className="mt-3 text-sm leading-relaxed text-slate-300">
             {profile.summary || 'Sem resumo cadastrado.'}
           </p>
-          <div className="mt-4 space-y-1 border-t border-slate-800 pt-3 text-xs text-slate-400">
+          <div className="mt-4 space-y-1 border-t border-slate-800 pt-3 text-sm text-slate-400">
             <p>E-mail: {profile.contactInfo?.email || '—'}</p>
             <p>Telefone: {profile.contactInfo?.phone || '—'}</p>
             <p>Localização: {profile.contactInfo?.location || '—'}</p>
@@ -169,19 +169,19 @@ export const ValidationConfirmView: React.FC<ValidationConfirmViewProps> = ({
         </div>
 
         <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+          <h3 className="eyebrow text-slate-400">
             Competências Confirmadas ({profile.skills.length})
           </h3>
           <div className="mt-3 flex flex-wrap gap-1.5">
             {profile.skills.length === 0 ? (
-              <span className="text-xs text-slate-400">
+              <span className="text-sm text-slate-400">
                 Nenhuma competência listada.
               </span>
             ) : (
               profile.skills.map((s, idx) => (
                 <span
                   key={`${s.name}-${idx}`}
-                  className="rounded-md border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-1 text-xs font-medium text-indigo-200"
+                  className="rounded-md border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-1 text-sm font-medium text-indigo-200"
                 >
                   {s.name}
                 </span>
@@ -189,19 +189,19 @@ export const ValidationConfirmView: React.FC<ValidationConfirmViewProps> = ({
             )}
           </div>
 
-          <h3 className="mt-6 text-xs font-semibold uppercase tracking-wider text-slate-400">
+          <h3 className="mt-6 eyebrow text-slate-400">
             Cargos Alvo ({profile.targetRoles.length})
           </h3>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {profile.targetRoles.length === 0 ? (
-              <span className="text-xs text-slate-400">
+              <span className="text-sm text-slate-400">
                 Nenhum cargo alvo definido.
               </span>
             ) : (
               profile.targetRoles.map((role, idx) => (
                 <span
                   key={idx}
-                  className="rounded-md border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs text-slate-200"
+                  className="rounded-md border border-slate-700 bg-slate-850 px-2.5 py-1 text-sm text-slate-200"
                 >
                   {role}
                 </span>

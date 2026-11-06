@@ -11,6 +11,7 @@ import {
   Bot,
   AlertCircle,
   RefreshCw,
+  X,
 } from 'lucide-react';
 import type {
   AnswerMissingQuestionsRequestDto,
@@ -42,7 +43,7 @@ import { JobDiscoveryView } from '../features/jobs/JobDiscoveryView';
 import { OpportunitiesDashboardView } from '../features/opportunities/OpportunitiesDashboardView';
 import { ApplicationsCenterView } from '../features/applications/ApplicationsCenterView';
 import { AutomationSettingsView } from '../features/automation/AutomationSettingsView';
-import logoCandidAuto from '../features/images/Logo CandidAUTO.png';
+import appLogo from '../features/images/Logo CandidAUTO.png';
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<NavTabId>('dashboard');
@@ -452,96 +453,175 @@ export const App: React.FC = () => {
   const navItems: {
     id: NavTabId;
     label: string;
-    icon: React.FC<{ className?: string }>;
+    icon: React.FC<{ className?: string; strokeWidth?: number }>;
+    group: 'Triagem' | 'Candidato' | 'Sistema';
+    count?: number;
   }[] = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'resume', label: 'Currículo', icon: FileText },
-    { id: 'analysis', label: 'Análise IA', icon: Sparkles },
-    { id: 'profile', label: 'Perfil', icon: UserCheck },
-    { id: 'validation', label: 'Validação', icon: ShieldCheck },
-    { id: 'jobs', label: 'Fontes & Vagas', icon: Globe },
-    { id: 'opportunities', label: 'Oportunidades', icon: Target },
-    { id: 'applications', label: 'Candidaturas', icon: Send },
-    { id: 'automation', label: 'Automação', icon: Bot },
+    { id: 'dashboard', label: 'Visão geral', icon: LayoutDashboard, group: 'Triagem' },
+    { id: 'opportunities', label: 'Oportunidades', icon: Target, group: 'Triagem', count: opportunities.length },
+    { id: 'applications', label: 'Candidaturas', icon: Send, group: 'Triagem', count: applications.length },
+    { id: 'jobs', label: 'Fontes & Vagas', icon: Globe, group: 'Triagem', count: jobs.length },
+    { id: 'resume', label: 'Currículo', icon: FileText, group: 'Candidato' },
+    { id: 'analysis', label: 'Análise IA', icon: Sparkles, group: 'Candidato' },
+    { id: 'profile', label: 'Perfil', icon: UserCheck, group: 'Candidato' },
+    { id: 'validation', label: 'Validação', icon: ShieldCheck, group: 'Candidato' },
+    { id: 'automation', label: 'Automação', icon: Bot, group: 'Sistema' },
   ];
+  const navGroups = ['Triagem', 'Candidato', 'Sistema'] as const;
+  const activeLabel = navItems.find((n) => n.id === activeTab)?.label ?? '';
+  const isAiWorking =
+    analyzingResumeId !== null ||
+    isDiscoveringAutomatically ||
+    isMatchingAll ||
+    preparingJobId !== null ||
+    isRunningMonitoring ||
+    syncingSourceId !== null;
+  const radarEnabled = searchConfig?.autoMonitoringEnabled ?? false;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      {/* Topbar SaaS */}
-      <header className="sticky top-0 z-30 border-b border-slate-800/80 bg-slate-950/95 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
-          <div className="flex shrink-0 items-center gap-3">
-            <img
-              src={logoCandidAuto}
-              alt="Logo CandidAUTO"
-              className="h-10 w-10 rounded-xl bg-white p-0.5 object-contain shadow-sm ring-1 ring-slate-700/60"
+    <div className="min-h-screen bg-slate-950 text-slate-100 lg:flex">
+      {/* Sidebar */}
+      <aside className="border-b border-slate-800 bg-sidebar lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-60 lg:shrink-0 lg:flex-col lg:border-b-0 lg:border-r">
+        <div className="flex items-center gap-2.5 px-5 py-4 lg:py-5">
+          <img
+            src={appLogo}
+            alt="Logo TQEP"
+            className="h-8 w-8 shrink-0 rounded-lg border border-slate-800 bg-white object-contain p-0.5"
+          />
+          <div className="leading-none">
+            <span className="font-display text-lg font-semibold tracking-tight text-white">
+              TQEP
+            </span>
+            <span className="eyebrow mt-1 block text-[11px] text-slate-500">
+              Triagem de vagas
+            </span>
+          </div>
+        </div>
+
+        <nav
+          aria-label="Navegação principal"
+          className="no-scrollbar flex gap-1 overflow-x-auto px-3 pb-3 lg:flex-1 lg:flex-col lg:gap-5 lg:overflow-y-auto lg:pb-0 lg:pt-2"
+        >
+          {navGroups.map((group) => (
+            <div key={group} className="flex gap-1 lg:flex-col">
+              <span className="eyebrow hidden px-2 pb-1.5 text-slate-500 lg:block">
+                {group}
+              </span>
+              {navItems
+                .filter((item) => item.group === group)
+                .map((item) => {
+                  const Icon = item.icon;
+                  const isActive = activeTab === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      data-testid={`nav-${item.id}`}
+                      aria-current={isActive ? 'page' : undefined}
+                      onClick={() => setActiveTab(item.id)}
+                      className={`group relative inline-flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium transition-colors ${
+                        isActive
+                          ? 'bg-slate-850 text-white'
+                          : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200'
+                      }`}
+                    >
+                      {isActive && (
+                        <span
+                          aria-hidden="true"
+                          className="absolute inset-y-2 left-0 hidden w-px bg-signal lg:block"
+                        />
+                      )}
+                      <Icon
+                        className={`h-4 w-4 shrink-0 ${isActive ? 'text-indigo-400' : ''}`}
+                        strokeWidth={1.75}
+                      />
+                      <span className="flex-1 text-left">{item.label}</span>
+                      {item.count !== undefined && item.count > 0 && (
+                        <span className="num hidden text-xs text-slate-500 lg:inline">
+                          {item.count}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+            </div>
+          ))}
+        </nav>
+
+        <div className="hidden border-t border-slate-800 px-5 py-4 lg:block">
+          <div className="flex items-center gap-2">
+            <span
+              aria-hidden="true"
+              className={`h-1.5 w-1.5 rounded-full ${
+                radarEnabled ? 'animate-live bg-emerald-400' : 'bg-slate-600'
+              }`}
             />
-            <div className="flex flex-col">
-              <span className="text-base font-bold leading-tight tracking-tight text-white">
-                CandidAUTO
-              </span>
-              <span className="mt-0.5 hidden rounded-md border border-slate-800 bg-slate-900 px-2 py-0.5 text-[10px] font-medium text-slate-400 2xl:inline-block">
-                v1.0 • Plataforma Completa
-              </span>
+            <span className="eyebrow text-slate-400">
+              {radarEnabled ? 'Radar ao vivo' : 'Radar pausado'}
+            </span>
+          </div>
+          {searchConfig?.intervalMinutes ? (
+            <p className="mt-1 text-xs text-slate-500">
+              Varredura a cada{' '}
+              <span className="num text-slate-400">{searchConfig.intervalMinutes}</span> min
+            </p>
+          ) : null}
+        </div>
+      </aside>
+
+      <div className="bg-grid min-w-0 flex-1">
+        {/* Barra superior */}
+        <header className="sticky top-0 z-30 border-b border-slate-800 bg-slate-950">
+          <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-10">
+            <div className="flex items-center gap-2 text-sm">
+              <span className="eyebrow text-slate-500">TQEP</span>
+              <span className="text-slate-700">/</span>
+              <span className="font-medium text-white">{activeLabel}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              {isAiWorking && (
+                <span className="eyebrow inline-flex items-center gap-2 rounded-md border border-indigo-400/30 bg-indigo-950 px-2.5 py-1.5 text-indigo-300">
+                  <span aria-hidden="true" className="h-1.5 w-1.5 animate-live rounded-full bg-indigo-400" />
+                  IA trabalhando
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={() => void loadInitialData()}
+                title="Recarregar dados"
+                className="inline-flex items-center gap-2 rounded-lg border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-300 hover:border-slate-700 hover:text-white"
+              >
+                <RefreshCw
+                  className={`h-3.5 w-3.5 ${isLoading ? 'animate-spin' : ''}`}
+                  strokeWidth={1.75}
+                />
+                Recarregar
+              </button>
             </div>
           </div>
-
-          <nav
-            aria-label="Navegação principal"
-            className="no-scrollbar flex flex-1 items-center justify-center gap-1 overflow-x-auto py-1 xl:gap-1.5"
-          >
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = activeTab === item.id;
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  data-testid={`nav-${item.id}`}
-                  onClick={() => setActiveTab(item.id)}
-                  className={`inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl px-2.5 py-2 text-xs font-medium transition xl:px-3.5 ${
-                    isActive
-                      ? 'bg-indigo-600 text-white shadow-sm'
-                      : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200'
-                  }`}
-                >
-                  <Icon className="h-3.5 w-3.5 shrink-0" />
-                  <span>{item.label}</span>
-                </button>
-              );
-            })}
-          </nav>
-
-          <button
-            type="button"
-            onClick={() => void loadInitialData()}
-            title="Recarregar dados"
-            className="shrink-0 rounded-lg border border-slate-800 bg-slate-900 p-2 text-slate-400 transition hover:border-slate-700 hover:text-white"
-          >
-            <RefreshCw
-              className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`}
-            />
-          </button>
-        </div>
-      </header>
+        </header>
 
       {/* Conteúdo Principal */}
-      <main className="mx-auto w-full max-w-[1600px] px-4 py-8 sm:px-6 lg:px-8">
+      <main
+        key={activeTab}
+        className="mx-auto w-full max-w-[1400px] animate-enter px-4 py-8 sm:px-6 lg:px-10 lg:py-10"
+      >
         {globalError && (
           <div
             role="alert"
             data-testid="global-error-banner"
-            className="mb-6 flex items-center justify-between gap-3 rounded-xl border border-rose-800 bg-rose-950/60 px-4 py-3 text-sm text-rose-200"
+            className="mb-6 flex items-center justify-between gap-3 rounded-lg border border-rose-800 bg-rose-950/60 px-4 py-3 text-sm text-rose-200"
           >
             <div className="flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 shrink-0 text-rose-400" />
+              <AlertCircle className="h-4 w-4 shrink-0 text-rose-400" strokeWidth={1.75} />
               <span>{globalError}</span>
             </div>
             <button
               type="button"
               onClick={() => setGlobalError(null)}
-              className="text-xs font-medium text-rose-300 underline hover:text-white"
+              className="inline-flex items-center gap-1 text-xs font-medium text-rose-300 hover:text-white"
             >
+              <X className="h-3.5 w-3.5" strokeWidth={1.75} />
               Fechar
             </button>
           </div>
@@ -640,6 +720,7 @@ export const App: React.FC = () => {
           />
         )}
       </main>
+      </div>
     </div>
   );
 };

@@ -39,6 +39,16 @@ const STATUS_LABELS: Record<ApplicationStatus, string> = {
   VAGA_ENCERRADA: 'Vaga encerrada',
 };
 
+export const getScoreBadgeClass = (score: number) => {
+  if (score >= 70) {
+    return 'border-emerald-500/40 bg-emerald-950/60 text-emerald-400';
+  }
+  if (score >= 50) {
+    return 'border-amber-500/40 bg-amber-950/60 text-amber-400';
+  }
+  return 'border-rose-500/40 bg-rose-950/60 text-rose-400';
+};
+
 export const OpportunitiesDashboardView: React.FC<
   OpportunitiesDashboardViewProps
 > = ({
@@ -103,29 +113,20 @@ export const OpportunitiesDashboardView: React.FC<
     return true;
   });
 
-  const getScoreBadgeClass = (score: number) => {
-    if (score >= 80) {
-      return 'border-emerald-700/70 bg-emerald-950/60 text-emerald-300';
-    }
-    if (score >= 60) {
-      return 'border-indigo-700/70 bg-indigo-950/60 text-indigo-300';
-    }
-    return 'border-amber-700/70 bg-amber-950/60 text-amber-300';
-  };
 
   return (
     <div className="space-y-6">
       {/* Header da Etapa 3 */}
       <div className="flex flex-col justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-900/70 p-6 sm:flex-row sm:items-center">
         <div>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-300">
-            <Sparkles className="h-3.5 w-3.5" />
+          <span className="eyebrow inline-flex items-center gap-2 text-slate-400">
+            <Sparkles className="h-4 w-4" />
             Etapa 3 • Motor de Compatibilidade 0–100% Explicável
           </span>
-          <h1 className="mt-2 text-xl font-semibold text-white">
+          <h1 className="mt-2 text-2xl font-semibold text-white">
             Painel de Oportunidades Analisadas pela IA
           </h1>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-base text-slate-400">
             Compare seu perfil com cada vaga encontrada, veja pontos positivos, pontos de atenção e prepare candidaturas inteligentes sem eliminar vagas por diferenciais desejáveis.
           </p>
         </div>
@@ -135,9 +136,9 @@ export const OpportunitiesDashboardView: React.FC<
           data-testid="btn-match-all-jobs"
           disabled={isMatchingAll}
           onClick={() => void onRunMatchAll()}
-          className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-500 disabled:opacity-50"
+          className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-base font-medium text-signal-ink transition hover:bg-indigo-500 disabled:opacity-50"
         >
-          <Sparkles className="h-4 w-4" />
+          <Sparkles className="h-[18px] w-[18px]" />
           {isMatchingAll
             ? 'Analisando Compatibilidade...'
             : 'Analisar Compatibilidade de Todas as Vagas'}
@@ -147,18 +148,18 @@ export const OpportunitiesDashboardView: React.FC<
       {/* Barra com os 9 Filtros Solicitados */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="flex items-center gap-2 text-sm font-semibold text-white">
-            <Filter className="h-4 w-4 text-indigo-400" />
+          <h2 className="flex items-center gap-2 text-base font-semibold text-white">
+            <Filter className="h-[18px] w-[18px] text-slate-400" />
             Filtros Avançados de Oportunidades
           </h2>
-          <span className="text-xs text-slate-400">
+          <span className="text-sm text-slate-400">
             Exibindo {filtered.length} de {opportunities.length} oportunidade(s)
           </span>
         </div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <div>
-            <label className="block text-[11px] font-medium text-slate-400">
+            <label className="block text-sm font-medium text-slate-400">
               1. Compatibilidade Mínima ({minScore}%)
             </label>
             <input
@@ -173,7 +174,7 @@ export const OpportunitiesDashboardView: React.FC<
           </div>
 
           <div>
-            <label className="block text-[11px] font-medium text-slate-400">
+            <label className="block text-sm font-medium text-slate-400">
               2. Área Profissional / Tecnologia
             </label>
             <input
@@ -181,12 +182,12 @@ export const OpportunitiesDashboardView: React.FC<
               value={areaFilter}
               onChange={(e) => setAreaFilter(e.target.value)}
               placeholder="Ex: Full Stack, Back-end, React, Java..."
-              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs text-white"
+              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-sm text-white"
             />
           </div>
 
           <div>
-            <label className="block text-[11px] font-medium text-slate-400">
+            <label className="block text-sm font-medium text-slate-400">
               3. Senioridade
             </label>
             <input
@@ -194,12 +195,12 @@ export const OpportunitiesDashboardView: React.FC<
               value={seniorityFilter}
               onChange={(e) => setSeniorityFilter(e.target.value)}
               placeholder="Ex: Júnior, Pleno, Sênior..."
-              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs text-white"
+              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-sm text-white"
             />
           </div>
 
           <div>
-            <label className="block text-[11px] font-medium text-slate-400">
+            <label className="block text-sm font-medium text-slate-400">
               4. Empresa
             </label>
             <input
@@ -207,12 +208,12 @@ export const OpportunitiesDashboardView: React.FC<
               value={companyFilter}
               onChange={(e) => setCompanyFilter(e.target.value)}
               placeholder="Filtrar por empresa..."
-              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs text-white"
+              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-sm text-white"
             />
           </div>
 
           <div>
-            <label className="block text-[11px] font-medium text-slate-400">
+            <label className="block text-sm font-medium text-slate-400">
               5. Faixa Salarial
             </label>
             <input
@@ -220,12 +221,12 @@ export const OpportunitiesDashboardView: React.FC<
               value={salaryFilter}
               onChange={(e) => setSalaryFilter(e.target.value)}
               placeholder="Ex: R$ 6.000..."
-              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs text-white"
+              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-sm text-white"
             />
           </div>
 
           <div>
-            <label className="block text-[11px] font-medium text-slate-400">
+            <label className="block text-sm font-medium text-slate-400">
               6. Modalidade
             </label>
             <select
@@ -233,7 +234,7 @@ export const OpportunitiesDashboardView: React.FC<
               onChange={(e) =>
                 setModalityFilter(e.target.value as WorkModality | '')
               }
-              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs text-white"
+              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-sm text-white"
             >
               <option value="">Todas as modalidades</option>
               <option value="REMOTO">Remoto</option>
@@ -243,7 +244,7 @@ export const OpportunitiesDashboardView: React.FC<
           </div>
 
           <div>
-            <label className="block text-[11px] font-medium text-slate-400">
+            <label className="block text-sm font-medium text-slate-400">
               7. Localização
             </label>
             <input
@@ -251,12 +252,12 @@ export const OpportunitiesDashboardView: React.FC<
               value={locationFilter}
               onChange={(e) => setLocationFilter(e.target.value)}
               placeholder="Ex: São Paulo, Remoto..."
-              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs text-white"
+              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-sm text-white"
             />
           </div>
 
           <div>
-            <label className="block text-[11px] font-medium text-slate-400">
+            <label className="block text-sm font-medium text-slate-400">
               8. Plataforma de Origem
             </label>
             <select
@@ -264,7 +265,7 @@ export const OpportunitiesDashboardView: React.FC<
               onChange={(e) =>
                 setPlatformFilter(e.target.value as JobPlatform | '')
               }
-              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs text-white"
+              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-sm text-white"
             >
               <option value="">Todas as plataformas</option>
               <option value="GREENHOUSE">Greenhouse</option>
@@ -281,7 +282,7 @@ export const OpportunitiesDashboardView: React.FC<
           </div>
 
           <div>
-            <label className="block text-[11px] font-medium text-slate-400">
+            <label className="block text-sm font-medium text-slate-400">
               9. Status da Candidatura
             </label>
             <select
@@ -289,7 +290,7 @@ export const OpportunitiesDashboardView: React.FC<
               onChange={(e) =>
                 setStatusFilter(e.target.value as ApplicationStatus | '')
               }
-              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs text-white"
+              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-sm text-white"
             >
               <option value="">Todos os status</option>
               {Object.entries(STATUS_LABELS).map(([key, label]) => (
@@ -305,7 +306,7 @@ export const OpportunitiesDashboardView: React.FC<
       {/* Cards de Oportunidades */}
       {filtered.length === 0 ? (
         <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-8 text-center">
-          <p className="text-sm text-slate-400">
+          <p className="text-base text-slate-400">
             Nenhuma oportunidade encontrada para os filtros atuais. Importe ou sincronize vagas na aba "Fontes & Vagas" e clique em "Analisar Compatibilidade de Todas as Vagas".
           </p>
         </div>
@@ -323,38 +324,38 @@ export const OpportunitiesDashboardView: React.FC<
                 <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-start">
                   <div className="space-y-2">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="rounded-md border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-0.5 text-xs font-medium text-indigo-300">
+                      <span className="rounded-md border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-0.5 text-sm font-medium text-indigo-300">
                         {job.sourcePlatform}
                       </span>
-                      <span className="rounded-md border border-slate-700 bg-slate-800 px-2.5 py-0.5 text-xs text-slate-300">
+                      <span className="rounded-md border border-slate-700 bg-slate-850 px-2.5 py-0.5 text-sm text-slate-300">
                         {job.workModality}
                       </span>
-                      <span className="rounded-md border border-slate-700 bg-slate-800 px-2.5 py-0.5 text-xs text-slate-300">
+                      <span className="rounded-md border border-slate-700 bg-slate-850 px-2.5 py-0.5 text-sm text-slate-300">
                         {job.seniority || 'Júnior/Pleno'}
                       </span>
-                      <span className="rounded-md border border-purple-700/50 bg-purple-950/50 px-2.5 py-0.5 text-xs font-medium text-purple-300">
+                      <span className="rounded-md border border-purple-700/50 bg-purple-950/50 px-2.5 py-0.5 text-sm font-medium text-purple-300">
                         Status: {STATUS_LABELS[applicationStatus] ?? applicationStatus}
                       </span>
                     </div>
 
-                    <h3 className="text-lg font-semibold text-white">
+                    <h3 className="text-xl font-semibold text-white">
                       Vaga: {job.title}
                     </h3>
 
-                    <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400">
+                    <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400">
                       <span className="inline-flex items-center gap-1 font-medium text-slate-200">
-                        <Building2 className="h-3.5 w-3.5 text-indigo-400" />
+                        <Building2 className="h-4 w-4 text-slate-400" />
                         {job.companyName}
                       </span>
                       {job.location && (
                         <span className="inline-flex items-center gap-1">
-                          <MapPin className="h-3.5 w-3.5 text-slate-500" />
+                          <MapPin className="h-4 w-4 text-slate-500" />
                           {job.location}
                         </span>
                       )}
                       {job.salaryRange && (
                         <span className="inline-flex items-center gap-1 text-emerald-300">
-                          <DollarSign className="h-3.5 w-3.5" />
+                          <DollarSign className="h-4 w-4" />
                           {job.salaryRange}
                         </span>
                       )}
@@ -365,17 +366,18 @@ export const OpportunitiesDashboardView: React.FC<
                   <div className="flex items-center gap-3">
                     {score !== null ? (
                       <div
-                        className={`rounded-2xl border px-4 py-2 text-center ${getScoreBadgeClass(
+                        data-testid={`score-badge-${job.id}`}
+                        className={`min-w-[112px] rounded-lg border px-4 py-2 text-left ${getScoreBadgeClass(
                           score
                         )}`}
                       >
-                        <span className="block text-[10px] font-semibold uppercase tracking-wider">
+                        <span className="block eyebrow opacity-80">
                           Compatibilidade
                         </span>
-                        <span className="text-2xl font-bold">{score}%</span>
+                        <span className="num text-3xl font-semibold">{score}%</span>
                       </div>
                     ) : (
-                      <span className="rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-slate-400">
+                      <span className="rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-400">
                         Ainda não analisada
                       </span>
                     )}
@@ -386,9 +388,9 @@ export const OpportunitiesDashboardView: React.FC<
                         data-testid={`btn-prepare-application-${job.id}`}
                         disabled={preparingJobId === job.id || !job.active}
                         onClick={() => void onPrepareApplication(job.id)}
-                        className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-indigo-500 disabled:opacity-50"
+                        className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-signal-ink transition hover:bg-indigo-500 disabled:opacity-50"
                       >
-                        <Send className="h-3.5 w-3.5" />
+                        <Send className="h-4 w-4" />
                         {preparingJobId === job.id
                           ? 'Preparando...'
                           : 'Preparar Candidatura com IA'}
@@ -398,9 +400,9 @@ export const OpportunitiesDashboardView: React.FC<
                         href={job.originalUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center justify-center gap-1 rounded-xl border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs text-slate-200 hover:bg-slate-700"
+                        className="inline-flex items-center justify-center gap-1 rounded-xl border border-slate-700 bg-slate-850 px-3 py-1.5 text-sm text-slate-200 hover:bg-slate-700"
                       >
-                        Publicação Original <ExternalLink className="h-3 w-3" />
+                        Publicação Original <ExternalLink className="h-3.5 w-3.5" />
                       </a>
                     </div>
                   </div>
@@ -409,7 +411,7 @@ export const OpportunitiesDashboardView: React.FC<
                 {/* Análise Explicável da IA */}
                 {matchAnalysis && (
                   <div className="mt-4 space-y-3 rounded-xl border border-slate-800/90 bg-slate-950/60 p-4">
-                    <p className="text-xs leading-relaxed text-slate-200">
+                    <p className="text-sm leading-relaxed text-slate-200">
                       <strong className="text-indigo-300">Resumo da IA:</strong>{' '}
                       {matchAnalysis.aiSummary}
                     </p>
@@ -417,11 +419,11 @@ export const OpportunitiesDashboardView: React.FC<
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                       {/* Pontos Positivos & Requisitos Atendidos */}
                       <div className="space-y-1.5">
-                        <h4 className="flex items-center gap-1.5 text-xs font-semibold text-emerald-400">
-                          <CheckCircle2 className="h-3.5 w-3.5" />
+                        <h4 className="flex items-center gap-1.5 text-sm font-semibold text-emerald-400">
+                          <CheckCircle2 className="h-4 w-4" />
                           Pontos Positivos & Requisitos Atendidos
                         </h4>
-                        <ul className="space-y-1 text-xs text-slate-300">
+                        <ul className="space-y-1 text-sm text-slate-300">
                           {matchAnalysis.positivePoints.map((pt, idx) => (
                             <li key={idx} className="flex items-start gap-1.5">
                               <span className="text-emerald-400">•</span>
@@ -442,17 +444,17 @@ export const OpportunitiesDashboardView: React.FC<
 
                       {/* Pontos de Atenção & Requisitos Não Atendidos */}
                       <div className="space-y-1.5">
-                        <h4 className="flex items-center gap-1.5 text-xs font-semibold text-amber-400">
-                          <AlertTriangle className="h-3.5 w-3.5" />
+                        <h4 className="flex items-center gap-1.5 text-sm font-semibold text-amber-400">
+                          <AlertTriangle className="h-4 w-4" />
                           Pontos de Atenção & Diferenciais
                         </h4>
                         {matchAnalysis.attentionPoints.length === 0 &&
                         matchAnalysis.missingRequirements.length === 0 ? (
-                          <p className="text-xs text-slate-400">
+                          <p className="text-sm text-slate-400">
                             Nenhum ponto crítico de atenção identificado.
                           </p>
                         ) : (
-                          <ul className="space-y-1 text-xs text-slate-300">
+                          <ul className="space-y-1 text-sm text-slate-300">
                             {matchAnalysis.attentionPoints.map((pt, idx) => (
                               <li key={idx} className="flex items-start gap-1.5">
                                 <span className="text-amber-400">•</span>

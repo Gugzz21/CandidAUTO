@@ -139,14 +139,14 @@ export const ApplicationsCenterView: React.FC<ApplicationsCenterViewProps> = ({
     <div className="space-y-6">
       {/* Cabeçalho */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-300">
-          <ShieldCheck className="h-3.5 w-3.5" />
+        <span className="eyebrow inline-flex items-center gap-2 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-emerald-300">
+          <ShieldCheck className="h-4 w-4" />
           Etapas 4, 5 & 6 • Preenchimento Inteligente, Revisão Obrigatória e Acompanhamento
         </span>
-        <h1 className="mt-2 text-xl font-semibold text-white">
+        <h1 className="mt-2 text-2xl font-semibold text-white">
           Central de Candidaturas e Revisão Final
         </h1>
-        <p className="mt-1 text-sm text-slate-400">
+        <p className="mt-1 text-base text-slate-400">
           Nenhuma candidatura é enviada sem sua aprovação explícita. A IA utiliza exclusivamente dados verdadeiros e confirmados do seu currículo e cofre de respostas.
         </p>
       </div>
@@ -156,7 +156,7 @@ export const ApplicationsCenterView: React.FC<ApplicationsCenterViewProps> = ({
         <div className="space-y-6 lg:col-span-5">
           <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
             <div className="mb-4 flex items-center justify-between gap-2">
-              <h2 className="text-sm font-semibold text-white">
+              <h2 className="text-base font-semibold text-white">
                 Histórico de Candidaturas ({filteredApps.length})
               </h2>
               <select
@@ -164,7 +164,7 @@ export const ApplicationsCenterView: React.FC<ApplicationsCenterViewProps> = ({
                 onChange={(e) =>
                   setStatusFilter(e.target.value as ApplicationStatus | '')
                 }
-                className="rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-1.5 text-xs text-white"
+                className="rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-1.5 text-sm text-white"
               >
                 <option value="">Todos os 11 status</option>
                 {ALL_STATUSES.map((st) => (
@@ -176,7 +176,7 @@ export const ApplicationsCenterView: React.FC<ApplicationsCenterViewProps> = ({
             </div>
 
             {filteredApps.length === 0 ? (
-              <p className="py-6 text-center text-xs text-slate-400">
+              <p className="py-6 text-center text-sm text-slate-400">
                 Nenhuma candidatura em preparação ou enviada. No "Painel de Oportunidades", clique em "Preparar Candidatura com IA".
               </p>
             ) : (
@@ -198,23 +198,23 @@ export const ApplicationsCenterView: React.FC<ApplicationsCenterViewProps> = ({
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span className="text-xs font-semibold text-white">
+                        <span className="text-sm font-semibold text-white">
                           {app.job.title}
                         </span>
                         {app.matchAnalysis && (
-                          <span className="rounded-md bg-indigo-500/20 px-2 py-0.5 text-[11px] font-bold text-indigo-300">
+                          <span className="num rounded-md border border-slate-700 bg-slate-850 px-2 py-0.5 text-sm font-semibold text-white">
                             {app.matchAnalysis.compatibilityScore}%
                           </span>
                         )}
                       </div>
-                      <p className="mt-0.5 text-xs text-slate-400">
+                      <p className="mt-0.5 text-sm text-slate-400">
                         {app.job.companyName} • {app.job.workModality}
                       </p>
                       <div className="mt-2 flex items-center justify-between">
-                        <span className="rounded-md border border-slate-700 bg-slate-900 px-2 py-0.5 text-[11px] text-slate-300">
+                        <span className="rounded-md border border-slate-700 bg-slate-900 px-2 py-0.5 text-sm text-slate-300">
                           {statusLabel}
                         </span>
-                        <span className="text-[11px] text-slate-500">
+                        <span className="text-sm text-slate-500">
                           {app.submissionMode === 'INTEGRACAO_AUTORIZADA'
                             ? 'Integração Autorizada'
                             : 'Fluxo Assistido'}
@@ -229,15 +229,15 @@ export const ApplicationsCenterView: React.FC<ApplicationsCenterViewProps> = ({
 
           {/* Cofre de Respostas Confirmadas do Candidato */}
           <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
-            <h2 className="flex items-center gap-2 text-sm font-semibold text-white">
-              <KeyRound className="h-4 w-4 text-emerald-400" />
+            <h2 className="flex items-center gap-2 text-base font-semibold text-white">
+              <KeyRound className="h-[18px] w-[18px] text-emerald-400" />
               Cofre de Respostas Confirmadas ({qaVault.length})
             </h2>
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-1 text-sm text-slate-400">
               Respostas reais fornecidas por você e reutilizadas com segurança em formulários futuros.
             </p>
             {qaVault.length === 0 ? (
-              <p className="mt-3 text-xs text-slate-500">
+              <p className="mt-3 text-sm text-slate-500">
                 Nenhuma resposta adicional salva ainda.
               </p>
             ) : (
@@ -245,7 +245,7 @@ export const ApplicationsCenterView: React.FC<ApplicationsCenterViewProps> = ({
                 {qaVault.map((item) => (
                   <div
                     key={item.id}
-                    className="rounded-lg border border-slate-800 bg-slate-950/70 p-2.5 text-xs"
+                    className="rounded-lg border border-slate-800 bg-slate-950/70 p-2.5 text-sm"
                   >
                     <p className="font-medium text-slate-300">
                       {item.questionLabel}
@@ -264,7 +264,7 @@ export const ApplicationsCenterView: React.FC<ApplicationsCenterViewProps> = ({
         <div className="lg:col-span-7">
           {!selectedApp ? (
             <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-10 text-center">
-              <p className="text-sm text-slate-400">
+              <p className="text-base text-slate-400">
                 Selecione uma candidatura ao lado ou prepare uma nova no Painel de Oportunidades para revisar campos e confirmar o envio.
               </p>
             </div>
@@ -273,14 +273,14 @@ export const ApplicationsCenterView: React.FC<ApplicationsCenterViewProps> = ({
               {/* Cabeçalho da Candidatura Selecionada */}
               <div className="flex flex-col justify-between gap-4 border-b border-slate-800 pb-4 sm:flex-row sm:items-center">
                 <div>
-                  <span className="text-xs font-medium text-indigo-400">
+                  <span className="text-sm font-medium text-indigo-400">
                     {selectedApp.job.companyName} •{' '}
                     {selectedApp.job.sourcePlatform}
                   </span>
-                  <h2 className="text-lg font-semibold text-white">
+                  <h2 className="text-xl font-semibold text-white">
                     {selectedApp.job.title}
                   </h2>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-sm text-slate-400">
                     Modo de Candidatura:{' '}
                     <strong className="text-slate-200">
                       {selectedApp.submissionMode === 'INTEGRACAO_AUTORIZADA'
@@ -294,23 +294,23 @@ export const ApplicationsCenterView: React.FC<ApplicationsCenterViewProps> = ({
                   href={selectedApp.job.originalUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-xs font-medium text-slate-200 hover:bg-slate-700"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-850 px-3 py-2 text-sm font-medium text-slate-200 hover:bg-slate-700"
                 >
-                  Abrir Link Oficial da Vaga <ExternalLink className="h-3.5 w-3.5" />
+                  Abrir Link Oficial da Vaga <ExternalLink className="h-4 w-4" />
                 </a>
               </div>
 
               {/* 1. Campos Preenchidos Automaticamente com Dados Verdadeiros */}
               <div>
-                <h3 className="flex items-center gap-2 text-sm font-semibold text-white">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                <h3 className="flex items-center gap-2 text-base font-semibold text-white">
+                  <CheckCircle2 className="h-[18px] w-[18px] text-emerald-400" />
                   Campos Preparados pela IA (Baseados no Currículo Confirmado)
                 </h3>
                 <div className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
                   {selectedApp.preparedFields.map((field) => (
                     <div
                       key={field.fieldName}
-                      className={`rounded-xl border p-3 text-xs ${
+                      className={`rounded-xl border p-3 text-sm ${
                         field.missing
                           ? 'border-amber-700/70 bg-amber-950/30'
                           : 'border-slate-800 bg-slate-950/70'
@@ -321,7 +321,7 @@ export const ApplicationsCenterView: React.FC<ApplicationsCenterViewProps> = ({
                           {field.fieldLabel}
                         </span>
                         {field.required && (
-                          <span className="text-[10px] text-amber-400">
+                          <span className="text-xs text-amber-400">
                             Obrigatório
                           </span>
                         )}
@@ -333,7 +333,7 @@ export const ApplicationsCenterView: React.FC<ApplicationsCenterViewProps> = ({
                           </em>
                         )}
                       </p>
-                      <p className="mt-1 text-[10px] text-slate-500">
+                      <p className="mt-1 text-xs text-slate-500">
                         Origem: {field.sourceEvidence}
                       </p>
                     </div>
@@ -348,13 +348,13 @@ export const ApplicationsCenterView: React.FC<ApplicationsCenterViewProps> = ({
                   className="space-y-4 rounded-xl border border-amber-700/60 bg-amber-950/20 p-4"
                 >
                   <div className="flex items-start gap-2">
-                    <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" />
+                    <AlertTriangle className="mt-0.5 h-[18px] w-[18px] shrink-0 text-amber-400" />
                     <div>
-                      <h4 className="text-xs font-semibold text-amber-200">
+                      <h4 className="text-sm font-semibold text-amber-200">
                         Informações Adicionais Solicitadas pela Empresa (
                         {selectedApp.missingQuestions.length})
                       </h4>
-                      <p className="text-xs text-amber-300/80">
+                      <p className="text-sm text-amber-300/80">
                         Para respeitar a regra de zero alucinação, responda abaixo com informações verdadeiras antes de aprovar o envio:
                       </p>
                     </div>
@@ -362,7 +362,7 @@ export const ApplicationsCenterView: React.FC<ApplicationsCenterViewProps> = ({
 
                   {selectedApp.missingQuestions.map((mq) => (
                     <div key={mq.questionKey} className="space-y-1">
-                      <label className="block text-xs font-medium text-white">
+                      <label className="block text-sm font-medium text-white">
                         {mq.questionLabel}{' '}
                         {mq.required && (
                           <span className="text-amber-400">*</span>
@@ -379,13 +379,13 @@ export const ApplicationsCenterView: React.FC<ApplicationsCenterViewProps> = ({
                           }))
                         }
                         placeholder="Digite sua resposta verdadeira..."
-                        className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                        className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
                       />
                     </div>
                   ))}
 
                   <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
-                    <label className="inline-flex items-center gap-2 text-xs text-slate-300">
+                    <label className="inline-flex items-center gap-2 text-sm text-slate-300">
                       <input
                         type="checkbox"
                         checked={saveToVault}
@@ -398,9 +398,9 @@ export const ApplicationsCenterView: React.FC<ApplicationsCenterViewProps> = ({
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="inline-flex items-center gap-1.5 rounded-xl bg-amber-600 px-4 py-2 text-xs font-semibold text-white hover:bg-amber-500 disabled:opacity-50"
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-amber-600 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-amber-500 disabled:opacity-50"
                     >
-                      <Save className="h-3.5 w-3.5" />
+                      <Save className="h-4 w-4" />
                       Confirmar Respostas e Atualizar Revisão
                     </button>
                   </div>
@@ -409,20 +409,20 @@ export const ApplicationsCenterView: React.FC<ApplicationsCenterViewProps> = ({
 
               {/* 3. Etapa 5: Tela de Revisão e Aprovação Explícita (BOTÃO CANDIDATAR-SE / BOTÃO CANCELAR) */}
               <div className="space-y-4 rounded-xl border border-indigo-500/40 bg-indigo-950/20 p-5">
-                <h3 className="text-sm font-semibold text-white">
+                <h3 className="text-base font-semibold text-white">
                   Decisão Final e Aprovação Explícita do Candidato
                 </h3>
-                <p className="text-xs text-slate-300">
+                <p className="text-sm text-slate-300">
                   Revise todos os campos preparados acima pela IA. O CandidAUTO atua como seu <strong>copiloto de recrutamento</strong>: organiza suas respostas verdadeiras, gera sua carta/resumo de apresentação e registra o envio oficial no seu painel de acompanhamento com comprovante auditável.
                 </p>
 
                 {selectedApp.job.originalUrl && (
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-lg border border-indigo-700/60 bg-indigo-950/40 p-3 text-xs text-indigo-200">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-lg border border-indigo-700/60 bg-indigo-950/40 p-3 text-sm text-indigo-200">
                     <div>
                       <p className="font-semibold text-white">
                         Concluir envio no portal oficial da oportunidade:
                       </p>
-                      <p className="mt-0.5 text-slate-300 text-[11px]">
+                      <p className="mt-0.5 text-slate-300 text-sm">
                         Plataformas como Gupy, LinkedIn e Greenhouse exigem login/etapas do candidato. Abra o link oficial abaixo e utilize os campos preparados acima para preencher sem digitar do zero!
                       </p>
                     </div>
@@ -430,15 +430,15 @@ export const ApplicationsCenterView: React.FC<ApplicationsCenterViewProps> = ({
                       href={selectedApp.job.originalUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-indigo-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500"
+                      className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-indigo-600 px-3.5 py-2 text-sm font-semibold text-signal-ink hover:bg-indigo-500"
                     >
-                      Abrir Vaga Oficial <ExternalLink className="h-3.5 w-3.5" />
+                      Abrir Vaga Oficial <ExternalLink className="h-4 w-4" />
                     </a>
                   </div>
                 )}
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-300">
+                  <label className="block text-sm font-medium text-slate-300">
                     Observações / Notas da Candidatura (opcional)
                   </label>
                   <input
@@ -446,12 +446,12 @@ export const ApplicationsCenterView: React.FC<ApplicationsCenterViewProps> = ({
                     value={submissionNotes}
                     onChange={(e) => setSubmissionNotes(e.target.value)}
                     placeholder="Ex: Currículo adaptado para vaga Full Stack..."
-                    className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                    className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
                   />
                 </div>
 
                 {selectedApp.submissionReceipt && (
-                  <div className="rounded-lg border border-emerald-700/60 bg-emerald-950/40 p-3 text-xs text-emerald-200">
+                  <div className="rounded-lg border border-emerald-700/60 bg-emerald-950/40 p-3 text-sm text-emerald-200">
                     <strong>Comprovante Registrado:</strong>{' '}
                     {selectedApp.submissionReceipt}
                   </div>
@@ -466,9 +466,9 @@ export const ApplicationsCenterView: React.FC<ApplicationsCenterViewProps> = ({
                       selectedApp.missingQuestions.some((q) => q.required)
                     }
                     onClick={() => void handleExplicitSubmit()}
-                    className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-white shadow-sm transition hover:bg-emerald-500 disabled:opacity-50"
+                    className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-bold uppercase tracking-wider text-signal-ink transition hover:bg-indigo-500 disabled:opacity-50"
                   >
-                    <Send className="h-4 w-4" />
+                    <Send className="h-[18px] w-[18px]" />
                     CANDIDATAR-SE
                   </button>
 
@@ -477,9 +477,9 @@ export const ApplicationsCenterView: React.FC<ApplicationsCenterViewProps> = ({
                     data-testid="btn-cancelar-rascunho"
                     disabled={isSubmitting}
                     onClick={() => void handleCancel(true)}
-                    className="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-xs font-semibold text-slate-200 transition hover:bg-slate-700"
+                    className="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-850 px-4 py-2.5 text-sm font-semibold text-slate-200 transition hover:bg-slate-700"
                   >
-                    <XCircle className="h-4 w-4 text-amber-400" />
+                    <XCircle className="h-[18px] w-[18px] text-amber-400" />
                     CANCELAR (Manter Rascunho)
                   </button>
 
@@ -488,9 +488,9 @@ export const ApplicationsCenterView: React.FC<ApplicationsCenterViewProps> = ({
                     data-testid="btn-cancelar-descartar"
                     disabled={isSubmitting}
                     onClick={() => void handleCancel(false)}
-                    className="inline-flex items-center gap-2 rounded-xl border border-rose-800/70 bg-rose-950/50 px-4 py-2.5 text-xs font-semibold text-rose-200 transition hover:bg-rose-900/60"
+                    className="inline-flex items-center gap-2 rounded-xl border border-rose-800/70 bg-rose-950/50 px-4 py-2.5 text-sm font-semibold text-rose-200 transition hover:bg-rose-900/60"
                   >
-                    <XCircle className="h-4 w-4 text-rose-400" />
+                    <XCircle className="h-[18px] w-[18px] text-rose-400" />
                     CANCELAR (Descartar)
                   </button>
                 </div>
@@ -498,7 +498,7 @@ export const ApplicationsCenterView: React.FC<ApplicationsCenterViewProps> = ({
 
               {/* 4. Etapa 6: Atualização Manual do Status do Processo Seletivo */}
               <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
-                <label className="block text-xs font-semibold text-white">
+                <label className="block text-sm font-semibold text-white">
                   Atualizar Status de Acompanhamento do Processo Seletivo:
                 </label>
                 <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -517,9 +517,9 @@ export const ApplicationsCenterView: React.FC<ApplicationsCenterViewProps> = ({
                           notes: submissionNotes,
                         })
                       }
-                      className={`rounded-lg border px-2.5 py-1 text-[11px] font-medium transition ${
+                      className={`rounded-lg border px-2.5 py-1 text-sm font-medium transition ${
                         selectedApp.status === st.value
-                          ? 'border-indigo-500 bg-indigo-600 text-white'
+                          ? 'border-indigo-500 bg-indigo-600 text-signal-ink'
                           : 'border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700'
                       } disabled:opacity-40`}
                     >
@@ -531,15 +531,15 @@ export const ApplicationsCenterView: React.FC<ApplicationsCenterViewProps> = ({
 
               {/* 5. Log de Auditoria */}
               <div>
-                <h4 className="flex items-center gap-1.5 text-xs font-semibold text-slate-300">
-                  <History className="h-3.5 w-3.5 text-indigo-400" />
+                <h4 className="flex items-center gap-1.5 text-sm font-semibold text-slate-300">
+                  <History className="h-4 w-4 text-slate-400" />
                   Histórico Auditável da Candidatura
                 </h4>
                 <div className="mt-2 space-y-1.5">
                   {selectedApp.auditLog.map((ev, idx) => (
                     <div
                       key={idx}
-                      className="rounded-lg border border-slate-800/80 bg-slate-950/70 px-3 py-2 text-[11px] text-slate-400"
+                      className="rounded-lg border border-slate-800/80 bg-slate-950/70 px-3 py-2 text-sm text-slate-400"
                     >
                       <span className="font-semibold text-indigo-300">
                         [{ev.status}]

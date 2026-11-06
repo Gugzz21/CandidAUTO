@@ -54,11 +54,11 @@ export const AiAnalysisView: React.FC<AiAnalysisViewProps> = ({
   if (!profile || (!profile.fullName && profile.evidences.length === 0)) {
     return (
       <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-8 text-center">
-        <ShieldAlert className="mx-auto h-10 w-10 text-indigo-400" />
-        <h2 className="mt-3 text-lg font-semibold text-white">
+        <ShieldAlert className="mx-auto h-10 w-10 text-slate-400" />
+        <h2 className="mt-3 text-xl font-semibold text-white">
           Nenhuma análise de IA executada ainda
         </h2>
-        <p className="mt-1 text-sm text-slate-400">
+        <p className="mt-1 text-base text-slate-400">
           Importe um currículo na aba "Currículo" e clique em "Estruturar Perfil com IA" para rastrear as evidências textuais.
         </p>
       </div>
@@ -78,19 +78,19 @@ export const AiAnalysisView: React.FC<AiAnalysisViewProps> = ({
     <div className="space-y-6">
       <div className="flex flex-col justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-900/70 p-6 sm:flex-row sm:items-center">
         <div>
-          <h2 className="text-lg font-semibold text-white">
+          <h2 className="text-xl font-semibold text-white">
             Auditoria de Evidências da IA (Zero-Alucinação)
           </h2>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-base text-slate-400">
             Todo dado proposto pela IA é confrontado com o texto real do currículo e classificado entre Extraído, Inferido/Sugerido, Não Encontrado ou Confirmado.
           </p>
         </div>
         <button
           type="button"
           onClick={onGoToEdit}
-          className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-500"
+          className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-base font-medium text-signal-ink hover:bg-indigo-500"
         >
-          <Edit3 className="h-4 w-4" />
+          <Edit3 className="h-[18px] w-[18px]" />
           Revisar e Editar Perfil
         </button>
       </div>
@@ -100,10 +100,10 @@ export const AiAnalysisView: React.FC<AiAnalysisViewProps> = ({
         <button
           type="button"
           onClick={() => setFilter('ALL')}
-          className={`rounded-lg px-3.5 py-1.5 text-xs font-medium transition ${
+          className={`rounded-lg px-3.5 py-1.5 text-sm font-medium transition ${
             filter === 'ALL'
-              ? 'bg-indigo-600 text-white'
-              : 'border border-slate-800 bg-slate-900 text-slate-300 hover:bg-slate-800'
+              ? 'bg-indigo-600 text-signal-ink'
+              : 'border border-slate-800 bg-slate-900 text-slate-300 hover:bg-slate-850'
           }`}
         >
           Todos os Campos ({profile.evidences.length})
@@ -111,10 +111,10 @@ export const AiAnalysisView: React.FC<AiAnalysisViewProps> = ({
         <button
           type="button"
           onClick={() => setFilter('VERIFIED')}
-          className={`rounded-lg px-3.5 py-1.5 text-xs font-medium transition ${
+          className={`rounded-lg px-3.5 py-1.5 text-sm font-medium transition ${
             filter === 'VERIFIED'
-              ? 'bg-emerald-600 text-white'
-              : 'border border-slate-800 bg-slate-900 text-emerald-300 hover:bg-slate-800'
+              ? 'bg-indigo-600 text-signal-ink'
+              : 'border border-slate-800 bg-slate-900 text-emerald-300 hover:bg-slate-850'
           }`}
         >
           Extraídos com Evidência Verificada ({verifiedCount})
@@ -122,10 +122,10 @@ export const AiAnalysisView: React.FC<AiAnalysisViewProps> = ({
         <button
           type="button"
           onClick={() => setFilter('REVIEW')}
-          className={`rounded-lg px-3.5 py-1.5 text-xs font-medium transition ${
+          className={`rounded-lg px-3.5 py-1.5 text-sm font-medium transition ${
             filter === 'REVIEW'
-              ? 'bg-amber-600 text-white'
-              : 'border border-slate-800 bg-slate-900 text-amber-300 hover:bg-slate-800'
+              ? 'bg-amber-600 text-slate-950'
+              : 'border border-slate-800 bg-slate-900 text-amber-300 hover:bg-slate-850'
           }`}
         >
           Inferidos / Não Encontrados ({reviewCount})
@@ -149,24 +149,24 @@ export const AiAnalysisView: React.FC<AiAnalysisViewProps> = ({
             >
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>
-                  <span className="text-xs font-mono text-slate-400">
+                  <span className="text-sm font-mono text-slate-400">
                     {ev.fieldPath}
                   </span>
-                  <h3 className="text-sm font-semibold text-white">
+                  <h3 className="text-base font-semibold text-white">
                     {ev.fieldLabel}
                   </h3>
                 </div>
                 <div className="flex items-center gap-2">
                   <span
-                    className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium ${badge.className}`}
+                    className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-sm font-medium ${badge.className}`}
                   >
-                    <BadgeIcon className="h-3.5 w-3.5" />
+                    <BadgeIcon className="h-4 w-4" />
                     {badge.label}
                   </span>
                   <button
                     type="button"
                     onClick={onGoToEdit}
-                    className="rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-0.5 text-xs text-slate-200 hover:bg-slate-700"
+                    className="rounded-lg border border-slate-700 bg-slate-850 px-2.5 py-0.5 text-sm text-slate-200 hover:bg-slate-700"
                   >
                     Editar
                   </button>
@@ -175,10 +175,10 @@ export const AiAnalysisView: React.FC<AiAnalysisViewProps> = ({
 
               <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
                 <div className="rounded-lg border border-slate-800/80 bg-slate-950/60 p-3">
-                  <span className="text-[11px] font-medium uppercase tracking-wider text-slate-400">
+                  <span className="eyebrow text-slate-400">
                     Valor Proposto pela IA
                   </span>
-                  <p className="mt-1 text-sm font-medium text-slate-100">
+                  <p className="mt-1 text-base font-medium text-slate-100">
                     {ev.extractedValue || (
                       <span className="italic text-amber-300">
                         Não identificado no currículo
@@ -187,10 +187,10 @@ export const AiAnalysisView: React.FC<AiAnalysisViewProps> = ({
                   </p>
                 </div>
                 <div className="rounded-lg border border-slate-800/80 bg-slate-950/60 p-3">
-                  <span className="inline-flex items-center gap-1 text-[11px] font-medium uppercase tracking-wider text-slate-400">
-                    <Quote className="h-3 w-3" /> Trecho de Evidência / Observação
+                  <span className="inline-flex items-center gap-1 eyebrow text-slate-400">
+                    <Quote className="h-3.5 w-3.5" /> Trecho de Evidência / Observação
                   </span>
-                  <p className="mt-1 text-xs text-slate-300">
+                  <p className="mt-1 text-sm text-slate-300">
                     {ev.evidenceText}
                   </p>
                 </div>

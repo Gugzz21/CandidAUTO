@@ -52,20 +52,20 @@ export const ConnectorDiagnosticsTable: React.FC<ConnectorDiagnosticsTableProps>
     >
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
         <div className="flex items-center gap-2">
-          <Activity className="h-4 w-4 text-indigo-400" />
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-200">
+          <Activity className="h-[18px] w-[18px] text-slate-400" />
+          <h3 className="eyebrow text-slate-200">
             {title} ({diagnostics.length})
           </h3>
         </div>
-        <span className="text-[11px] text-slate-400">
+        <span className="text-sm text-slate-400">
           URL • HTTP • Extraídas • Motivos de Descarte • Salvas/Atualizadas
         </span>
       </div>
 
       <div className="mt-3 overflow-x-auto">
-        <table className="w-full min-w-[720px] text-left text-xs text-slate-300">
+        <table className="w-full min-w-[720px] text-left text-sm text-slate-300">
           <thead>
-            <tr className="border-b border-slate-800 text-[11px] uppercase tracking-wider text-slate-400">
+            <tr className="border-b border-slate-800 eyebrow text-slate-400">
               <th className="py-2 pr-3">Conector / URL Consultada</th>
               <th className="py-2 px-3">HTTP & Status</th>
               <th className="py-2 px-3 text-center">Extraídas</th>
@@ -90,12 +90,12 @@ export const ConnectorDiagnosticsTable: React.FC<ConnectorDiagnosticsTableProps>
                     <div className="font-medium text-white">
                       {diag.connectorName}
                     </div>
-                    <div className="mt-0.5 max-w-[300px] truncate font-mono text-[10px] text-slate-400" title={diag.queriedUrl}>
+                    <div className="mt-0.5 max-w-[300px] truncate font-mono text-xs text-slate-400" title={diag.queriedUrl}>
                       {diag.queriedUrl}
                     </div>
                     {diag.errorMessage && (
-                      <div className="mt-1 flex items-start gap-1 text-[11px] text-rose-300">
-                        <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0" />
+                      <div className="mt-1 flex items-start gap-1 text-sm text-rose-300">
+                        <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                         <span>{diag.errorMessage}</span>
                       </div>
                     )}
@@ -104,19 +104,19 @@ export const ConnectorDiagnosticsTable: React.FC<ConnectorDiagnosticsTableProps>
                   <td className="py-2.5 px-3">
                     <div className="flex flex-wrap items-center gap-1.5">
                       {diag.httpStatus !== null && diag.httpStatus !== undefined && (
-                        <span className="rounded border border-slate-700 bg-slate-950 px-1.5 py-0.5 font-mono text-[10px] text-slate-200">
+                        <span className="rounded border border-slate-700 bg-slate-950 px-1.5 py-0.5 font-mono text-xs text-slate-200">
                           HTTP {diag.httpStatus}
                         </span>
                       )}
                       <span
-                        className={`inline-flex items-center gap-1 rounded border px-2 py-0.5 text-[10px] font-medium ${badge.className}`}
+                        className={`inline-flex items-center gap-1 rounded border px-2 py-0.5 text-xs font-medium ${badge.className}`}
                       >
                         {isError ? (
-                          <AlertTriangle className="h-3 w-3" />
+                          <AlertTriangle className="h-3.5 w-3.5" />
                         ) : diag.responseContainedJobs ? (
-                          <CheckCircle2 className="h-3 w-3" />
+                          <CheckCircle2 className="h-3.5 w-3.5" />
                         ) : (
-                          <HelpCircle className="h-3 w-3" />
+                          <HelpCircle className="h-3.5 w-3.5" />
                         )}
                         {badge.label}
                       </span>
@@ -140,7 +140,7 @@ export const ConnectorDiagnosticsTable: React.FC<ConnectorDiagnosticsTableProps>
                             {reasonsList.map(([reason, count]) => (
                               <span
                                 key={reason}
-                                className="rounded border border-slate-700 bg-slate-950 px-1.5 py-0.5 text-[10px] text-slate-300"
+                                className="rounded border border-slate-700 bg-slate-950 px-1.5 py-0.5 text-xs text-slate-300"
                               >
                                 {reason}: {count}
                               </span>

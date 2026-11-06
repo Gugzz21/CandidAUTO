@@ -159,14 +159,14 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
       {/* Cabeçalho da Etapa 2 */}
       <div className="flex flex-col justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-900/70 p-6 sm:flex-row sm:items-center">
         <div>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-300">
-            <Globe className="h-3.5 w-3.5" />
+          <span className="eyebrow inline-flex items-center gap-2 text-slate-400">
+            <Globe className="h-4 w-4" />
             Etapa 2 • Job Discovery Engine & Conectores Reais
           </span>
-          <h2 className="mt-2 text-lg font-semibold text-white">
+          <h2 className="mt-2 text-xl font-semibold text-white">
             Descoberta Automática, Fontes Oficiais e Deduplicação de Vagas
           </h2>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-base text-slate-400">
             Busque oportunidades automaticamente pelos seus cargos desejados (Gupy Portal Público, Remotive, Arbeitnow, Catálogo Greenhouse & Lever), sincronize quadros próprios ou importe links do LinkedIn e Indeed.
           </p>
         </div>
@@ -178,12 +178,12 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
               data-testid="btn-auto-discover-jobs"
               disabled={isDiscoveringAutomatically}
               onClick={() => void onDiscoverAutomatically()}
-              className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-base font-semibold text-signal-ink hover:bg-indigo-500 disabled:opacity-50"
             >
               {isDiscoveringAutomatically ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="h-[18px] w-[18px] animate-spin" />
               ) : (
-                <Sparkles className="h-4 w-4" />
+                <Sparkles className="h-[18px] w-[18px]" />
               )}
               {isDiscoveringAutomatically
                 ? 'Pesquisando Vagas...'
@@ -195,9 +195,9 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
             type="button"
             data-testid="toggle-import-job-btn"
             onClick={() => setShowImportModal((v) => !v)}
-            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-500"
+            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-base font-medium text-signal-ink hover:bg-indigo-500"
           >
-            <Link2 className="h-4 w-4" />
+            <Link2 className="h-[18px] w-[18px]" />
             {showImportModal ? 'Fechar Importador' : 'Importar Vaga por Link'}
           </button>
         </div>
@@ -205,7 +205,7 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
 
       {lastDiscoveryResult && (
         <div className="space-y-4">
-          <div className="rounded-xl border border-emerald-800/60 bg-emerald-950/30 p-4 text-xs text-emerald-200">
+          <div className="rounded-xl border border-emerald-800/60 bg-emerald-950/30 p-4 text-sm text-emerald-200">
             <p className="font-semibold text-emerald-300">
               Resultado da Descoberta Automática ({lastDiscoveryResult.queriesExecuted} consultas executadas):
             </p>
@@ -215,12 +215,12 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
               {lastDiscoveryResult.filteredOutIrrelevant} vaga(s) descartada(s) por estarem fora do seu cargo/senioridade/modalidade.
             </p>
             {lastDiscoveryResult.activeProviders.length > 0 && (
-              <p className="mt-1 text-[11px] text-emerald-300/80">
+              <p className="mt-1 text-sm text-emerald-300/80">
                 Fontes consultadas: {lastDiscoveryResult.activeProviders.join(' • ')}
               </p>
             )}
             {lastDiscoveryResult.warnings && lastDiscoveryResult.warnings.length > 0 && (
-              <div className="mt-2 rounded-lg border border-amber-500/40 bg-amber-950/40 p-2.5 text-[11px] text-amber-200">
+              <div className="mt-2 rounded-lg border border-amber-500/40 bg-amber-950/40 p-2.5 text-sm text-amber-200">
                 <span className="font-semibold">Alertas de Conectores: </span>
                 {lastDiscoveryResult.warnings.join(' | ')}
               </div>
@@ -240,18 +240,18 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
           data-testid="import-job-form"
           className="space-y-4 rounded-2xl border border-indigo-500/40 bg-slate-900/90 p-6"
         >
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-indigo-400">
+          <h3 className="eyebrow text-slate-400">
             Importar Vaga Assistida (Sem violar termos de uso)
           </h3>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div>
-              <label className="block text-xs font-medium text-slate-300">
+              <label className="block text-sm font-medium text-slate-300">
                 Plataforma de Origem *
               </label>
               <select
                 value={impPlatform}
                 onChange={(e) => setImpPlatform(e.target.value as JobPlatform)}
-                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
               >
                 <option value="LINKEDIN">LinkedIn Jobs</option>
                 <option value="INDEED">Indeed</option>
@@ -266,7 +266,7 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-300">
+              <label className="block text-sm font-medium text-slate-300">
                 Nome da Empresa *
               </label>
               <input
@@ -275,11 +275,11 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
                 value={impCompany}
                 onChange={(e) => setImpCompany(e.target.value)}
                 placeholder="Ex.: Mercado Livre"
-                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-300">
+              <label className="block text-sm font-medium text-slate-300">
                 Título da Vaga *
               </label>
               <input
@@ -288,20 +288,20 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
                 value={impTitle}
                 onChange={(e) => setImpTitle(e.target.value)}
                 placeholder="Ex.: Desenvolvedor Full Stack Júnior"
-                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
             <div>
-              <label className="block text-xs font-medium text-slate-300">
+              <label className="block text-sm font-medium text-slate-300">
                 Modalidade
               </label>
               <select
                 value={impModality}
                 onChange={(e) => setImpModality(e.target.value as WorkModality)}
-                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
               >
                 <option value="REMOTO">Remoto</option>
                 <option value="HIBRIDO">Híbrido</option>
@@ -309,7 +309,7 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-300">
+              <label className="block text-sm font-medium text-slate-300">
                 Senioridade
               </label>
               <input
@@ -317,11 +317,11 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
                 value={impSeniority}
                 onChange={(e) => setImpSeniority(e.target.value)}
                 placeholder="Júnior / Pleno / Sênior"
-                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-300">
+              <label className="block text-sm font-medium text-slate-300">
                 Localização
               </label>
               <input
@@ -329,11 +329,11 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
                 value={impLocation}
                 onChange={(e) => setImpLocation(e.target.value)}
                 placeholder="Ex.: São Paulo, SP"
-                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-300">
+              <label className="block text-sm font-medium text-slate-300">
                 Faixa Salarial (se disponível)
               </label>
               <input
@@ -341,13 +341,13 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
                 value={impSalary}
                 onChange={(e) => setImpSalary(e.target.value)}
                 placeholder="Ex.: R$ 5.500 - R$ 7.000"
-                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300">
+            <label className="block text-sm font-medium text-slate-300">
               Link Original da Oportunidade *
             </label>
             <input
@@ -356,12 +356,12 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
               value={impUrl}
               onChange={(e) => setImpUrl(e.target.value)}
               placeholder="https://..."
-              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300">
+            <label className="block text-sm font-medium text-slate-300">
               Descrição Completa da Vaga * (O sistema extrairá requisitos obrigatórios, desejáveis, tecnologias e benefícios)
             </label>
             <textarea
@@ -370,7 +370,7 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
               value={impDescription}
               onChange={(e) => setImpDescription(e.target.value)}
               placeholder="Cole aqui a descrição completa, requisitos obrigatórios, diferenciais e benefícios..."
-              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
             />
           </div>
 
@@ -378,7 +378,7 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
             <button
               type="button"
               onClick={() => setShowImportModal(false)}
-              className="rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-medium text-slate-300"
+              className="rounded-lg border border-slate-700 bg-slate-850 px-4 py-2 text-sm font-medium text-slate-300"
             >
               Cancelar
             </button>
@@ -386,12 +386,12 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
               type="submit"
               data-testid="submit-import-job-btn"
               disabled={isImporting}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-500 disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-signal-ink hover:bg-indigo-500 disabled:opacity-50"
             >
               {isImporting ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                <Plus className="h-3.5 w-3.5" />
+                <Plus className="h-4 w-4" />
               )}
               Normalizar e Salvar Vaga
             </button>
@@ -401,7 +401,7 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
 
       {/* Conectores de Fontes Automáticas (Greenhouse, Lever, Gupy, Career Pages) */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400">
+        <h3 className="eyebrow text-slate-400">
           Conectores de Fontes Automáticas ({sources.length})
         </h3>
 
@@ -414,12 +414,12 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
             value={sourceName}
             onChange={(e) => setSourceName(e.target.value)}
             placeholder="Nome da Empresa (ex.: Nubank, Brex, GitLab)"
-            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white sm:col-span-4"
+            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white sm:col-span-4"
           />
           <select
             value={sourcePlatform}
             onChange={(e) => setSourcePlatform(e.target.value as JobPlatform)}
-            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white sm:col-span-3"
+            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white sm:col-span-3"
           >
             <option value="GREENHOUSE">Greenhouse (Job Board API)</option>
             <option value="LEVER">Lever (Postings API)</option>
@@ -431,14 +431,14 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
             value={boardIdentifier}
             onChange={(e) => setBoardIdentifier(e.target.value)}
             placeholder="Board Token ou URL (ex.: nubank, brex, https://...)"
-            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white sm:col-span-3"
+            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white sm:col-span-3"
           />
           <button
             type="submit"
             disabled={isCreatingSource}
-            className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-2 text-xs font-medium text-white hover:bg-indigo-500 sm:col-span-2"
+            className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-2 text-sm font-medium text-signal-ink hover:bg-indigo-500 sm:col-span-2"
           >
-            <Plus className="h-3.5 w-3.5" />
+            <Plus className="h-4 w-4" />
             Adicionar Fonte
           </button>
         </form>
@@ -454,18 +454,18 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
                 >
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-white">
+                      <span className="text-base font-medium text-white">
                         {src.name}
                       </span>
-                      <span className="rounded border border-slate-700 bg-slate-900 px-2 py-0.5 text-[10px] font-semibold text-indigo-300">
+                      <span className="rounded border border-slate-700 bg-slate-900 px-2 py-0.5 text-xs font-semibold text-indigo-300">
                         {src.platform}
                       </span>
                     </div>
-                    <p className="mt-0.5 text-xs text-slate-400">
+                    <p className="mt-0.5 text-sm text-slate-400">
                       Board: <code className="text-slate-300">{src.boardIdentifier}</code>
                     </p>
                     {src.lastSyncStatus && (
-                      <p className="mt-1 text-[11px] text-slate-400">
+                      <p className="mt-1 text-sm text-slate-400">
                         {src.lastSyncStatus}
                       </p>
                     )}
@@ -475,10 +475,10 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
                       type="button"
                       disabled={isSyncing}
                       onClick={() => onSyncSource(src.id)}
-                      className="inline-flex items-center gap-1 rounded-lg bg-indigo-600/90 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-500 disabled:opacity-50"
+                      className="inline-flex items-center gap-1 rounded-lg bg-indigo-600/90 px-3 py-1.5 text-sm font-medium text-signal-ink hover:bg-indigo-500 disabled:opacity-50"
                     >
                       <RefreshCw
-                        className={`h-3.5 w-3.5 ${isSyncing ? 'animate-spin' : ''}`}
+                        className={`h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`}
                       />
                       {isSyncing ? 'Sincronizando...' : 'Sincronizar'}
                     </button>
@@ -487,7 +487,7 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
                       onClick={() => onDeleteSource(src.id)}
                       className="rounded-lg border border-slate-800 p-1.5 text-slate-400 hover:text-rose-400"
                     >
-                      <Trash2 className="h-3.5 w-3.5" />
+                      <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
                 </div>
@@ -500,13 +500,13 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
       {/* Barra de Filtros das Vagas Encontradas */}
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-800 bg-slate-900/60 p-4">
         <div className="relative flex-1 min-w-[220px]">
-          <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
+          <Search className="pointer-events-none absolute left-3 top-2.5 h-[18px] w-[18px] text-slate-500" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Filtrar por cargo, empresa, tecnologia ou cidade..."
-            className="w-full rounded-lg border border-slate-700 bg-slate-950 pl-9 pr-3 py-1.5 text-xs text-white focus:border-indigo-500 focus:outline-none"
+            className="w-full rounded-lg border border-slate-700 bg-slate-950 pl-9 pr-3 py-1.5 text-sm text-white focus:border-indigo-500 focus:outline-none"
           />
         </div>
 
@@ -514,7 +514,7 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
           <select
             value={filterPlatform}
             onChange={(e) => setFilterPlatform(e.target.value)}
-            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs text-white"
+            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-sm text-white"
           >
             <option value="ALL">Todas as Plataformas</option>
             <option value="GUPY">Gupy (Portal & Empresas)</option>
@@ -530,7 +530,7 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
           <select
             value={filterModality}
             onChange={(e) => setFilterModality(e.target.value)}
-            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs text-white"
+            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-sm text-white"
           >
             <option value="ALL">Todas as Modalidades</option>
             <option value="REMOTO">Remoto</option>
@@ -538,7 +538,7 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
             <option value="PRESENCIAL">Presencial</option>
           </select>
 
-          <label className="inline-flex items-center gap-1.5 text-xs text-slate-300">
+          <label className="inline-flex items-center gap-1.5 text-sm text-slate-300">
             <input
               type="checkbox"
               checked={showExpired}
@@ -553,7 +553,7 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
       {/* Lista de Oportunidades Normalizadas */}
       <div className="space-y-4">
         {filteredJobs.length === 0 ? (
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-10 text-center text-sm text-slate-400">
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-10 text-center text-base text-slate-400">
             Nenhuma vaga encontrada com os filtros atuais. Adicione uma fonte acima ou clique em "Importar Vaga por Link".
           </div>
         ) : (
@@ -570,40 +570,40 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="rounded-md border border-indigo-500/30 bg-indigo-500/10 px-2 py-0.5 text-[11px] font-semibold text-indigo-300">
+                    <span className="rounded-md border border-indigo-500/30 bg-indigo-500/10 px-2 py-0.5 text-sm font-semibold text-indigo-300">
                       {job.sourcePlatform}
                     </span>
-                    <span className="rounded-md border border-slate-700 bg-slate-800 px-2 py-0.5 text-[11px] text-slate-300">
+                    <span className="rounded-md border border-slate-700 bg-slate-850 px-2 py-0.5 text-sm text-slate-300">
                       {MODALITY_LABELS[job.workModality]}
                     </span>
                     {job.seniority && (
-                      <span className="rounded-md border border-purple-500/30 bg-purple-500/10 px-2 py-0.5 text-[11px] text-purple-300">
+                      <span className="rounded-md border border-purple-500/30 bg-purple-500/10 px-2 py-0.5 text-sm text-purple-300">
                         {job.seniority}
                       </span>
                     )}
                     {!job.active && (
-                      <span className="rounded-md border border-rose-700 bg-rose-950 px-2 py-0.5 text-[11px] text-rose-300">
+                      <span className="rounded-md border border-rose-700 bg-rose-950 px-2 py-0.5 text-sm text-rose-300">
                         Vaga Expirada / Indisponível
                       </span>
                     )}
                   </div>
-                  <h3 className="mt-2 text-base font-semibold text-white">
+                  <h3 className="mt-2 text-lg font-semibold text-white">
                     {job.title}
                   </h3>
-                  <div className="mt-1 flex flex-wrap items-center gap-4 text-xs text-slate-400">
+                  <div className="mt-1 flex flex-wrap items-center gap-4 text-sm text-slate-400">
                     <span className="inline-flex items-center gap-1">
-                      <Building2 className="h-3.5 w-3.5 text-slate-500" />
+                      <Building2 className="h-4 w-4 text-slate-500" />
                       {job.companyName}
                     </span>
                     {job.location && (
                       <span className="inline-flex items-center gap-1">
-                        <MapPin className="h-3.5 w-3.5 text-slate-500" />
+                        <MapPin className="h-4 w-4 text-slate-500" />
                         {job.location}
                       </span>
                     )}
                     {job.salaryRange && (
                       <span className="inline-flex items-center gap-1 text-emerald-300">
-                        <Briefcase className="h-3.5 w-3.5" />
+                        <Briefcase className="h-4 w-4" />
                         {job.salaryRange}
                       </span>
                     )}
@@ -614,16 +614,16 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
                   <button
                     type="button"
                     onClick={() => onToggleAvailability(job.id, !job.active)}
-                    className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs text-slate-300 hover:bg-slate-700"
+                    className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-850 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-700"
                   >
                     {job.active ? (
                       <>
-                        <XCircle className="h-3.5 w-3.5 text-amber-400" />
+                        <XCircle className="h-4 w-4 text-amber-400" />
                         Marcar Expirada
                       </>
                     ) : (
                       <>
-                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                        <CheckCircle2 className="h-4 w-4 text-emerald-400" />
                         Reativar
                       </>
                     )}
@@ -633,9 +633,9 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
                       href={job.originalUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-500"
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-signal-ink hover:bg-indigo-500"
                     >
-                      Link Original <ExternalLink className="h-3.5 w-3.5" />
+                      Link Original <ExternalLink className="h-4 w-4" />
                     </a>
                   )}
                 </div>
@@ -647,7 +647,7 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
                   {job.technologies.map((tech) => (
                     <span
                       key={tech}
-                      className="rounded border border-slate-700 bg-slate-950 px-2 py-0.5 text-[11px] font-medium text-slate-200"
+                      className="rounded border border-slate-700 bg-slate-950 px-2 py-0.5 text-sm font-medium text-slate-200"
                     >
                       {tech}
                     </span>
@@ -658,15 +658,15 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
               {/* Requisitos obrigatórios e desejáveis */}
               <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
                 <div className="rounded-xl border border-slate-800/80 bg-slate-950/60 p-3">
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-indigo-400">
+                  <span className="eyebrow text-slate-400">
                     Requisitos Obrigatórios ({job.mandatoryRequirements.length})
                   </span>
                   {job.mandatoryRequirements.length === 0 ? (
-                    <p className="mt-1 text-xs text-slate-400">
+                    <p className="mt-1 text-sm text-slate-400">
                       Consulte a descrição completa.
                     </p>
                   ) : (
-                    <ul className="mt-1.5 list-inside list-disc space-y-1 text-xs text-slate-300">
+                    <ul className="mt-1.5 list-inside list-disc space-y-1 text-sm text-slate-300">
                       {job.mandatoryRequirements.slice(0, 5).map((req, idx) => (
                         <li key={idx}>{req}</li>
                       ))}
@@ -675,22 +675,22 @@ export const JobDiscoveryView: React.FC<JobDiscoveryViewProps> = ({
                 </div>
 
                 <div className="rounded-xl border border-slate-800/80 bg-slate-950/60 p-3">
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-purple-400">
+                  <span className="eyebrow text-slate-400">
                     Requisitos Desejáveis / Benefícios
                   </span>
                   {job.desirableRequirements.length > 0 ? (
-                    <ul className="mt-1.5 list-inside list-disc space-y-1 text-xs text-slate-300">
+                    <ul className="mt-1.5 list-inside list-disc space-y-1 text-sm text-slate-300">
                       {job.desirableRequirements.slice(0, 4).map((req, idx) => (
                         <li key={idx}>{req}</li>
                       ))}
                     </ul>
                   ) : (
-                    <p className="mt-1 text-xs text-slate-400">
+                    <p className="mt-1 text-sm text-slate-400">
                       Sem diferenciais separados listados.
                     </p>
                   )}
                   {job.benefits.length > 0 && (
-                    <p className="mt-2 text-[11px] text-emerald-300">
+                    <p className="mt-2 text-sm text-emerald-300">
                       Benefícios: {job.benefits.join(' • ')}
                     </p>
                   )}

@@ -134,10 +134,10 @@ export const ResumeManagerView: React.FC<ResumeManagerViewProps> = ({
     <div className="space-y-6">
       {/* Tela 1 — Envio do currículo com Drag & Drop real */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6">
-        <h2 className="text-lg font-semibold text-white">
+        <h2 className="text-xl font-semibold text-white">
           Importar Currículo (PDF ou DOCX)
         </h2>
-        <p className="mt-1 text-sm text-slate-400">
+        <p className="mt-1 text-base text-slate-400">
           O documento é validado binariamente, armazenado em diretório privado com identificador interno e seu texto é extraído localmente com Apache PDFBox / Apache POI.
         </p>
 
@@ -156,14 +156,14 @@ export const ResumeManagerView: React.FC<ResumeManagerViewProps> = ({
             {isUploading ? (
               <Loader2 className="h-8 w-8 animate-spin text-indigo-400" />
             ) : (
-              <Upload className="h-8 w-8 text-indigo-400" />
+              <Upload className="h-8 w-8 text-slate-400" />
             )}
-            <span className="mt-3 text-sm font-medium text-white">
+            <span className="mt-3 text-base font-medium text-white">
               {isUploading
                 ? 'Enviando e extraindo texto do currículo...'
                 : 'Arraste e solte seu arquivo PDF ou DOCX aqui, ou clique para selecionar'}
             </span>
-            <span className="mt-1 text-xs text-slate-400">
+            <span className="mt-1 text-sm text-slate-400">
               Tamanho máximo permitido: 10 MB • Apenas documentos com texto selecionável
             </span>
             <input
@@ -181,9 +181,9 @@ export const ResumeManagerView: React.FC<ResumeManagerViewProps> = ({
         {localError && (
           <div
             role="alert"
-            className="mt-4 flex items-center gap-2 rounded-xl border border-rose-800 bg-rose-950/50 px-4 py-3 text-sm text-rose-200"
+            className="mt-4 flex items-center gap-2 rounded-xl border border-rose-800 bg-rose-950/50 px-4 py-3 text-base text-rose-200"
           >
-            <AlertCircle className="h-4 w-4 shrink-0 text-rose-400" />
+            <AlertCircle className="h-[18px] w-[18px] shrink-0 text-rose-400" />
             <span>{localError}</span>
           </div>
         )}
@@ -191,7 +191,7 @@ export const ResumeManagerView: React.FC<ResumeManagerViewProps> = ({
 
       {/* Tela 2 — Etapas Reais do Processamento */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+        <h3 className="eyebrow text-slate-400">
           Etapas Reais do Processamento (Currículo Selecionado)
         </h3>
         <div className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-6">
@@ -200,16 +200,16 @@ export const ResumeManagerView: React.FC<ResumeManagerViewProps> = ({
             return (
               <div
                 key={step.id}
-                className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 text-xs ${
+                className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 text-sm ${
                   done
                     ? 'border-emerald-700/60 bg-emerald-950/30 text-emerald-200'
                     : 'border-slate-800 bg-slate-950/60 text-slate-400'
                 }`}
               >
                 {done ? (
-                  <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
+                  <CheckCircle2 className="h-[18px] w-[18px] shrink-0 text-emerald-400" />
                 ) : (
-                  <Clock className="h-4 w-4 shrink-0 text-slate-500" />
+                  <Clock className="h-[18px] w-[18px] shrink-0 text-slate-500" />
                 )}
                 <span className="font-medium">{step.label}</span>
               </div>
@@ -221,11 +221,11 @@ export const ResumeManagerView: React.FC<ResumeManagerViewProps> = ({
       {/* Lista de currículos e visualização do texto extraído */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         <div className="space-y-3 lg:col-span-7">
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400">
+          <h3 className="eyebrow text-slate-400">
             Histórico de Currículos ({resumes.length})
           </h3>
           {resumes.length === 0 ? (
-            <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-8 text-center text-sm text-slate-400">
+            <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-8 text-center text-base text-slate-400">
               Nenhum currículo importado até o momento.
             </div>
           ) : (
@@ -242,14 +242,14 @@ export const ResumeManagerView: React.FC<ResumeManagerViewProps> = ({
                 >
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-400">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-800 bg-slate-850 text-slate-300">
                         <FileText className="h-5 w-5" />
                       </div>
                       <div>
                         <p className="font-medium text-white">
                           {resume.filename}
                         </p>
-                        <p className="text-xs text-slate-400">
+                        <p className="text-sm text-slate-400">
                           {resume.fileType} • {(resume.fileSizeBytes / 1024).toFixed(1)} KB •{' '}
                           {resume.extractedTextLength} caracteres extraídos
                         </p>
@@ -259,7 +259,7 @@ export const ResumeManagerView: React.FC<ResumeManagerViewProps> = ({
                   </div>
 
                   {resume.errorMessage && (
-                    <div className="mt-3 rounded-lg border border-rose-800/60 bg-rose-950/40 px-3 py-2 text-xs text-rose-300">
+                    <div className="mt-3 rounded-lg border border-rose-800/60 bg-rose-950/40 px-3 py-2 text-sm text-rose-300">
                       {resume.errorMessage}
                     </div>
                   )}
@@ -268,9 +268,9 @@ export const ResumeManagerView: React.FC<ResumeManagerViewProps> = ({
                     <button
                       type="button"
                       onClick={() => setSelectedResumeId(resume.id)}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/80 px-3 py-1.5 text-xs font-medium text-slate-200 hover:bg-slate-800"
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-850/80 px-3 py-1.5 text-sm font-medium text-slate-200 hover:bg-slate-850"
                     >
-                      <Eye className="h-3.5 w-3.5" />
+                      <Eye className="h-4 w-4" />
                       Ver texto extraído
                     </button>
                     {resume.status !== 'FAILED' && (
@@ -279,12 +279,12 @@ export const ResumeManagerView: React.FC<ResumeManagerViewProps> = ({
                         data-testid={`analyze-btn-${resume.id}`}
                         disabled={isAnalyzing}
                         onClick={() => void onAnalyzeResume(resume.id)}
-                        className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-indigo-500 disabled:opacity-50"
+                        className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3.5 py-1.5 text-sm font-medium text-signal-ink transition hover:bg-indigo-500 disabled:opacity-50"
                       >
                         {isAnalyzing ? (
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
-                          <Sparkles className="h-3.5 w-3.5" />
+                          <Sparkles className="h-4 w-4" />
                         )}
                         {isAnalyzing
                           ? 'Analisando...'
@@ -299,27 +299,27 @@ export const ResumeManagerView: React.FC<ResumeManagerViewProps> = ({
         </div>
 
         <div className="lg:col-span-5">
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400">
+          <h3 className="eyebrow text-slate-400">
             Inspeção do Texto Extraído
           </h3>
           <div className="mt-3 rounded-xl border border-slate-800 bg-slate-900/60 p-4">
             {selectedResume ? (
               <>
                 <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                  <span className="text-xs font-medium text-slate-300">
+                  <span className="text-sm font-medium text-slate-300">
                     {selectedResume.filename}
                   </span>
-                  <span className="text-xs text-slate-400">
+                  <span className="text-sm text-slate-400">
                     {selectedResume.extractedTextLength} chars
                   </span>
                 </div>
-                <pre className="mt-3 max-h-96 overflow-y-auto whitespace-pre-wrap font-mono text-xs leading-relaxed text-slate-300">
+                <pre className="mt-3 max-h-96 overflow-y-auto whitespace-pre-wrap font-mono text-sm leading-relaxed text-slate-300">
                   {selectedResume.extractedTextPreview ||
                     'Nenhum texto extraído disponível para este arquivo.'}
                 </pre>
               </>
             ) : (
-              <p className="text-xs text-slate-400">
+              <p className="text-sm text-slate-400">
                 Selecione um currículo ao lado para inspecionar o texto extraído.
               </p>
             )}

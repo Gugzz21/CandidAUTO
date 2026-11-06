@@ -292,10 +292,10 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="flex flex-col justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-900/70 p-6 sm:flex-row sm:items-center">
         <div>
-          <h2 className="text-lg font-semibold text-white">
+          <h2 className="text-xl font-semibold text-white">
             Perfil Profissional Estruturado (Revisão Completa)
           </h2>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-base text-slate-400">
             Revise, complemente e corrija todas as seções extraídas do seu currículo antes da confirmação explícita.
           </p>
         </div>
@@ -303,12 +303,12 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
           type="submit"
           data-testid="save-profile-btn"
           disabled={isSaving}
-          className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-500 disabled:opacity-50"
+          className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-base font-medium text-signal-ink transition hover:bg-indigo-500 disabled:opacity-50"
         >
           {isSaving ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <Loader2 className="h-[18px] w-[18px] animate-spin" />
           ) : (
-            <Save className="h-4 w-4" />
+            <Save className="h-[18px] w-[18px]" />
           )}
           {isSaving ? 'Salvando...' : 'Salvar Alterações'}
         </button>
@@ -317,16 +317,16 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
       {feedback && (
         <div
           role="alert"
-          className={`flex items-center gap-2 rounded-xl border px-4 py-3 text-sm ${
+          className={`flex items-center gap-2 rounded-xl border px-4 py-3 text-base ${
             feedback.type === 'success'
               ? 'border-emerald-800 bg-emerald-950/50 text-emerald-200'
               : 'border-rose-800 bg-rose-950/50 text-rose-200'
           }`}
         >
           {feedback.type === 'success' ? (
-            <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
+            <CheckCircle2 className="h-[18px] w-[18px] shrink-0 text-emerald-400" />
           ) : (
-            <AlertCircle className="h-4 w-4 shrink-0 text-rose-400" />
+            <AlertCircle className="h-[18px] w-[18px] shrink-0 text-rose-400" />
           )}
           <span>{feedback.message}</span>
         </div>
@@ -335,13 +335,13 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
       {/* Dados Principais e Contato */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-indigo-400">
+          <h3 className="eyebrow text-slate-400">
             Identificação, Resumo & Senioridade
           </h3>
           <div>
             <label
               htmlFor="profile-fullname"
-              className="block text-xs font-medium text-slate-300"
+              className="block text-sm font-medium text-slate-300"
             >
               Nome Completo *
             </label>
@@ -352,7 +352,7 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               placeholder="Ex.: Rafael Almeida"
-              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"
+              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-base text-white focus:border-indigo-500 focus:outline-none"
             />
           </div>
 
@@ -360,7 +360,7 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
             <div>
               <label
                 htmlFor="profile-headline"
-                className="block text-xs font-medium text-slate-300"
+                className="block text-sm font-medium text-slate-300"
               >
                 Cargo / Título Profissional
               </label>
@@ -370,14 +370,14 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
                 value={headline}
                 onChange={(e) => setHeadline(e.target.value)}
                 placeholder="Ex.: Desenvolvedor Full Stack"
-                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"
+                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-base text-white focus:border-indigo-500 focus:outline-none"
               />
             </div>
 
             <div>
               <label
                 htmlFor="profile-seniority"
-                className="block text-xs font-medium text-slate-300"
+                className="block text-sm font-medium text-slate-300"
               >
                 Senioridade
               </label>
@@ -385,7 +385,7 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
                 id="profile-seniority"
                 value={seniorityLevel}
                 onChange={(e) => setSeniorityLevel(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"
+                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-base text-white focus:border-indigo-500 focus:outline-none"
               >
                 <option value="">Selecione...</option>
                 <option value="Estágio">Estágio</option>
@@ -400,7 +400,7 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
           <div>
             <label
               htmlFor="profile-target-roles"
-              className="block text-xs font-medium text-slate-300"
+              className="block text-sm font-medium text-slate-300"
             >
               Áreas / Cargos de Interesse (separados por vírgula)
             </label>
@@ -410,14 +410,14 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
               value={targetRolesInput}
               onChange={(e) => setTargetRolesInput(e.target.value)}
               placeholder="Desenvolvedor Back-end Júnior, Desenvolvedor Full Stack Júnior"
-              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"
+              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-base text-white focus:border-indigo-500 focus:outline-none"
             />
           </div>
 
           <div>
             <label
               htmlFor="profile-summary"
-              className="block text-xs font-medium text-slate-300"
+              className="block text-sm font-medium text-slate-300"
             >
               Resumo Profissional
             </label>
@@ -427,42 +427,42 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
               value={summary}
               onChange={(e) => setSummary(e.target.value)}
               placeholder="Resumo objetivo da sua experiência e foco técnico..."
-              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"
+              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-base text-white focus:border-indigo-500 focus:outline-none"
             />
           </div>
         </div>
 
         <div className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-indigo-400">
+          <h3 className="eyebrow text-slate-400">
             Dados de Contato & Links Profissionais
           </h3>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className="block text-xs font-medium text-slate-300">
+              <label className="block text-sm font-medium text-slate-300">
                 E-mail
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"
+                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-base text-white focus:border-indigo-500 focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-300">
+              <label className="block text-sm font-medium text-slate-300">
                 Telefone / WhatsApp
               </label>
               <input
                 type="text"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"
+                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-base text-white focus:border-indigo-500 focus:outline-none"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300">
+            <label className="block text-sm font-medium text-slate-300">
               Localização (Cidade / Estado / Modalidade)
             </label>
             <input
@@ -470,37 +470,37 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="Ex.: São Paulo, SP (Remoto / Híbrido)"
-              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"
+              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-base text-white focus:border-indigo-500 focus:outline-none"
             />
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className="block text-xs font-medium text-slate-300">
+              <label className="block text-sm font-medium text-slate-300">
                 LinkedIn URL
               </label>
               <input
                 type="text"
                 value={linkedinUrl}
                 onChange={(e) => setLinkedinUrl(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"
+                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-base text-white focus:border-indigo-500 focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-300">
+              <label className="block text-sm font-medium text-slate-300">
                 GitHub URL
               </label>
               <input
                 type="text"
                 value={githubUrl}
                 onChange={(e) => setGithubUrl(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"
+                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-base text-white focus:border-indigo-500 focus:outline-none"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300">
+            <label className="block text-sm font-medium text-slate-300">
               Portfólio / Site Pessoal URL
             </label>
             <input
@@ -508,7 +508,7 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
               value={portfolioUrl}
               onChange={(e) => setPortfolioUrl(e.target.value)}
               placeholder="https://meuportfolio.dev"
-              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none"
+              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-base text-white focus:border-indigo-500 focus:outline-none"
             />
           </div>
         </div>
@@ -516,17 +516,17 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
 
       {/* Competências Técnicas e Comportamentais */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-indigo-400">
+        <h3 className="eyebrow text-slate-400">
           Competências Técnicas e Comportamentais ({skills.length})
         </h3>
         <div className="mt-3 flex flex-wrap gap-2">
           {skills.map((skill, idx) => (
             <span
               key={`${skill.name}-${idx}`}
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs font-medium text-slate-200"
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-sm font-medium text-slate-200"
             >
               <span>{skill.name}</span>
-              <span className="text-[10px] text-slate-400">
+              <span className="text-xs text-slate-400">
                 ({skill.category})
               </span>
               <button
@@ -534,7 +534,7 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
                 onClick={() => handleRemoveSkill(idx)}
                 className="text-slate-400 hover:text-rose-400"
               >
-                <Trash2 className="h-3 w-3" />
+                <Trash2 className="h-3.5 w-3.5" />
               </button>
             </span>
           ))}
@@ -546,12 +546,12 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
             value={newSkillName}
             onChange={(e) => setNewSkillName(e.target.value)}
             placeholder="Adicionar competência (ex.: Docker, AWS, Comunicação)..."
-            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs text-white focus:border-indigo-500 focus:outline-none"
+            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-sm text-white focus:border-indigo-500 focus:outline-none"
           />
           <select
             value={newSkillCategory}
             onChange={(e) => setNewSkillCategory(e.target.value)}
-            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs text-white"
+            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-sm text-white"
           >
             <option value="LANGUAGE_TECH">Linguagem</option>
             <option value="FRAMEWORK">Framework</option>
@@ -562,9 +562,9 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
           <button
             type="button"
             onClick={handleAddSkill}
-            className="inline-flex items-center gap-1 rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-700"
+            className="inline-flex items-center gap-1 rounded-lg bg-slate-850 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700"
           >
-            <Plus className="h-3.5 w-3.5" />
+            <Plus className="h-4 w-4" />
             Adicionar
           </button>
         </div>
@@ -573,15 +573,15 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
       {/* Experiências Profissionais */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-indigo-400">
+          <h3 className="eyebrow text-slate-400">
             Experiências Profissionais ({experiences.length})
           </h3>
           <button
             type="button"
             onClick={handleAddExperience}
-            className="inline-flex items-center gap-1 rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-700"
+            className="inline-flex items-center gap-1 rounded-lg bg-slate-850 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700"
           >
-            <Plus className="h-3.5 w-3.5" />
+            <Plus className="h-4 w-4" />
             Adicionar Experiência
           </button>
         </div>
@@ -600,7 +600,7 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
                     handleUpdateExperience(idx, 'role', e.target.value)
                   }
                   placeholder="Cargo"
-                  className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs text-white"
+                  className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm text-white"
                 />
                 <input
                   type="text"
@@ -609,7 +609,7 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
                     handleUpdateExperience(idx, 'company', e.target.value)
                   }
                   placeholder="Empresa"
-                  className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs text-white"
+                  className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm text-white"
                 />
                 <input
                   type="text"
@@ -618,7 +618,7 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
                     handleUpdateExperience(idx, 'startDate', e.target.value)
                   }
                   placeholder="Início (ex.: 2023)"
-                  className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs text-white"
+                  className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm text-white"
                 />
                 <div className="flex items-center gap-2">
                   <input
@@ -628,14 +628,14 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
                       handleUpdateExperience(idx, 'endDate', e.target.value)
                     }
                     placeholder="Fim / Atual"
-                    className="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs text-white"
+                    className="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm text-white"
                   />
                   <button
                     type="button"
                     onClick={() => handleRemoveExperience(idx)}
                     className="text-slate-400 hover:text-rose-400"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-[18px] w-[18px]" />
                   </button>
                 </div>
               </div>
@@ -646,7 +646,7 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
                   handleUpdateExperience(idx, 'description', e.target.value)
                 }
                 placeholder="Principais atividades e resultados alcançados..."
-                className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs text-white"
+                className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm text-white"
               />
             </div>
           ))}
@@ -656,15 +656,15 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
       {/* Formação Acadêmica */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-indigo-400">
+          <h3 className="eyebrow text-slate-400">
             Formação Acadêmica ({education.length})
           </h3>
           <button
             type="button"
             onClick={handleAddEducation}
-            className="inline-flex items-center gap-1 rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-700"
+            className="inline-flex items-center gap-1 rounded-lg bg-slate-850 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700"
           >
-            <Plus className="h-3.5 w-3.5" />
+            <Plus className="h-4 w-4" />
             Adicionar Formação
           </button>
         </div>
@@ -682,7 +682,7 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
                   handleUpdateEducation(idx, 'degree', e.target.value)
                 }
                 placeholder="Curso / Grau (ex.: Bacharelado em Ciência da Computação)"
-                className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs text-white"
+                className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm text-white"
               />
               <input
                 type="text"
@@ -691,7 +691,7 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
                   handleUpdateEducation(idx, 'institution', e.target.value)
                 }
                 placeholder="Instituição"
-                className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs text-white"
+                className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm text-white"
               />
               <div className="flex items-center gap-2">
                 <input
@@ -701,14 +701,14 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
                     handleUpdateEducation(idx, 'status', e.target.value)
                   }
                   placeholder="Status / Ano"
-                  className="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs text-white"
+                  className="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm text-white"
                 />
                 <button
                   type="button"
                   onClick={() => handleRemoveEducation(idx)}
                   className="text-slate-400 hover:text-rose-400"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-[18px] w-[18px]" />
                 </button>
               </div>
             </div>
@@ -721,15 +721,15 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
         {/* Idiomas */}
         <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-indigo-400">
+            <h3 className="eyebrow text-slate-400">
               Idiomas ({languages.length})
             </h3>
             <button
               type="button"
               onClick={handleAddLanguage}
-              className="inline-flex items-center gap-1 rounded-lg bg-slate-800 px-2.5 py-1 text-xs font-medium text-white hover:bg-slate-700"
+              className="inline-flex items-center gap-1 rounded-lg bg-slate-850 px-2.5 py-1 text-sm font-medium text-white hover:bg-slate-700"
             >
-              <Plus className="h-3 w-3" />
+              <Plus className="h-3.5 w-3.5" />
               Idioma
             </button>
           </div>
@@ -746,7 +746,7 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
                     handleUpdateLanguage(idx, 'language', e.target.value)
                   }
                   placeholder="Ex.: Inglês"
-                  className="w-1/2 rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-white"
+                  className="w-1/2 rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-1 text-sm text-white"
                 />
                 <input
                   type="text"
@@ -755,14 +755,14 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
                     handleUpdateLanguage(idx, 'proficiency', e.target.value)
                   }
                   placeholder="Nível"
-                  className="w-1/2 rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-white"
+                  className="w-1/2 rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-1 text-sm text-white"
                 />
                 <button
                   type="button"
                   onClick={() => handleRemoveLanguage(idx)}
                   className="text-slate-400 hover:text-rose-400"
                 >
-                  <Trash2 className="h-3.5 w-3.5" />
+                  <Trash2 className="h-4 w-4" />
                 </button>
               </div>
             ))}
@@ -772,15 +772,15 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
         {/* Certificações e Cursos */}
         <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-indigo-400">
+            <h3 className="eyebrow text-slate-400">
               Certificações & Cursos ({certifications.length})
             </h3>
             <button
               type="button"
               onClick={handleAddCertification}
-              className="inline-flex items-center gap-1 rounded-lg bg-slate-800 px-2.5 py-1 text-xs font-medium text-white hover:bg-slate-700"
+              className="inline-flex items-center gap-1 rounded-lg bg-slate-850 px-2.5 py-1 text-sm font-medium text-white hover:bg-slate-700"
             >
-              <Plus className="h-3 w-3" />
+              <Plus className="h-3.5 w-3.5" />
               Curso
             </button>
           </div>
@@ -798,14 +798,14 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
                       handleUpdateCertification(idx, 'name', e.target.value)
                     }
                     placeholder="Nome da certificação / curso"
-                    className="w-full rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-white"
+                    className="w-full rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-1 text-sm text-white"
                   />
                   <button
                     type="button"
                     onClick={() => handleRemoveCertification(idx)}
                     className="text-slate-400 hover:text-rose-400"
                   >
-                    <Trash2 className="h-3.5 w-3.5" />
+                    <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
                 <input
@@ -815,7 +815,7 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
                     handleUpdateCertification(idx, 'issuer', e.target.value)
                   }
                   placeholder="Instituição emissora"
-                  className="w-full rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-white"
+                  className="w-full rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-1 text-sm text-white"
                 />
               </div>
             ))}
@@ -825,15 +825,15 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
         {/* Projetos */}
         <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-indigo-400">
+            <h3 className="eyebrow text-slate-400">
               Projetos ({projects.length})
             </h3>
             <button
               type="button"
               onClick={handleAddProject}
-              className="inline-flex items-center gap-1 rounded-lg bg-slate-800 px-2.5 py-1 text-xs font-medium text-white hover:bg-slate-700"
+              className="inline-flex items-center gap-1 rounded-lg bg-slate-850 px-2.5 py-1 text-sm font-medium text-white hover:bg-slate-700"
             >
-              <Plus className="h-3 w-3" />
+              <Plus className="h-3.5 w-3.5" />
               Projeto
             </button>
           </div>
@@ -851,14 +851,14 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
                       handleUpdateProject(idx, 'name', e.target.value)
                     }
                     placeholder="Nome do projeto"
-                    className="w-full rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-white"
+                    className="w-full rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-1 text-sm text-white"
                   />
                   <button
                     type="button"
                     onClick={() => handleRemoveProject(idx)}
                     className="text-slate-400 hover:text-rose-400"
                   >
-                    <Trash2 className="h-3.5 w-3.5" />
+                    <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
                 <input
@@ -868,7 +868,7 @@ export const ProfileEditorView: React.FC<ProfileEditorViewProps> = ({
                     handleUpdateProject(idx, 'description', e.target.value)
                   }
                   placeholder="Descrição / tecnologias"
-                  className="w-full rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-white"
+                  className="w-full rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-1 text-sm text-white"
                 />
               </div>
             ))}

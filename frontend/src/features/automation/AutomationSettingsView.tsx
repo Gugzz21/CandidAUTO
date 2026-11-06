@@ -91,14 +91,14 @@ export const AutomationSettingsView: React.FC<AutomationSettingsViewProps> = ({
     <div className="space-y-6">
       <div className="flex flex-col justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-900/70 p-6 sm:flex-row sm:items-center">
         <div>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-300">
-            <Bot className="h-3.5 w-3.5" />
+          <span className="eyebrow inline-flex items-center gap-2 text-slate-400">
+            <Bot className="h-4 w-4" />
             Etapa 6 • Automação e Monitoramento Inteligente de Vagas
           </span>
-          <h1 className="mt-2 text-xl font-semibold text-white">
+          <h1 className="mt-2 text-2xl font-semibold text-white">
             Configurações de Pesquisa e Automação
           </h1>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-base text-slate-400">
             O agendador em segundo plano executa periodicamente o Job Discovery Engine conforme o intervalo configurado, consultando APIs públicas (Gupy Portal Público, Remotive, Arbeitnow, Catálogo Greenhouse & Lever) e suas fontes cadastradas com filtragem automática por cargo, modalidade e senioridade.
           </p>
         </div>
@@ -108,9 +108,9 @@ export const AutomationSettingsView: React.FC<AutomationSettingsViewProps> = ({
           data-testid="btn-run-monitoring-now"
           disabled={isRunningCycle}
           onClick={() => void onRunMonitoringNow()}
-          className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-500 disabled:opacity-50"
+          className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-base font-semibold text-signal-ink transition hover:bg-indigo-500 disabled:opacity-50"
         >
-          <Play className="h-4 w-4" />
+          <Play className="h-[18px] w-[18px]" />
           {isRunningCycle
             ? 'Executando Ciclo...'
             : 'Executar Monitoramento Agora'}
@@ -119,8 +119,8 @@ export const AutomationSettingsView: React.FC<AutomationSettingsViewProps> = ({
 
       {searchConfig?.lastRunSummary && (
         <div className="space-y-4">
-          <div className="flex items-start gap-3 rounded-xl border border-emerald-800/60 bg-emerald-950/30 p-4 text-xs text-emerald-200">
-            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+          <div className="flex items-start gap-3 rounded-xl border border-emerald-800/60 bg-emerald-950/30 p-4 text-sm text-emerald-200">
+            <CheckCircle2 className="mt-0.5 h-[18px] w-[18px] shrink-0 text-emerald-400" />
             <div>
               <p className="font-semibold">
                 Último Ciclo de Monitoramento
@@ -150,15 +150,15 @@ export const AutomationSettingsView: React.FC<AutomationSettingsViewProps> = ({
         className="space-y-6 rounded-2xl border border-slate-800 bg-slate-900/70 p-6"
       >
         <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
-          <Sliders className="h-4 w-4 text-indigo-400" />
-          <h2 className="text-sm font-semibold text-white">
+          <Sliders className="h-[18px] w-[18px] text-slate-400" />
+          <h2 className="text-base font-semibold text-white">
             Parâmetros de Busca Automática
           </h2>
         </div>
 
         {/* Cargos Procurados */}
         <div>
-          <label className="block text-xs font-medium text-slate-300">
+          <label className="block text-sm font-medium text-slate-300">
             Cargos e Oportunidades que Você Procura
           </label>
           <div className="mt-2 flex gap-2">
@@ -167,14 +167,14 @@ export const AutomationSettingsView: React.FC<AutomationSettingsViewProps> = ({
               value={newRoleInput}
               onChange={(e) => setNewRoleInput(e.target.value)}
               placeholder="Ex: Desenvolvedor Full Stack Júnior..."
-              className="flex-1 rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2 text-xs text-white"
+              className="flex-1 rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2 text-sm text-white"
             />
             <button
               type="button"
               onClick={handleAddRole}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-medium text-white hover:bg-slate-700"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-850 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700"
             >
-              <Plus className="h-3.5 w-3.5" />
+              <Plus className="h-4 w-4" />
               Adicionar Cargo
             </button>
           </div>
@@ -183,7 +183,7 @@ export const AutomationSettingsView: React.FC<AutomationSettingsViewProps> = ({
             {desiredRoles.map((role) => (
               <span
                 key={role}
-                className="inline-flex items-center gap-2 rounded-xl border border-indigo-500/40 bg-indigo-950/40 px-3 py-1.5 text-xs text-indigo-200"
+                className="inline-flex items-center gap-2 rounded-xl border border-indigo-500/40 bg-indigo-950/40 px-3 py-1.5 text-sm text-indigo-200"
               >
                 {role}
                 <button
@@ -191,7 +191,7 @@ export const AutomationSettingsView: React.FC<AutomationSettingsViewProps> = ({
                   onClick={() => handleRemoveRole(role)}
                   className="text-slate-400 hover:text-rose-400"
                 >
-                  <Trash2 className="h-3 w-3" />
+                  <Trash2 className="h-3.5 w-3.5" />
                 </button>
               </span>
             ))}
@@ -201,7 +201,7 @@ export const AutomationSettingsView: React.FC<AutomationSettingsViewProps> = ({
         {/* Modalidades e Score Mínimo */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
           <div>
-            <label className="block text-xs font-medium text-slate-300">
+            <label className="block text-sm font-medium text-slate-300">
               Modalidades Desejadas
             </label>
             <div className="mt-2 flex flex-wrap gap-2">
@@ -212,9 +212,9 @@ export const AutomationSettingsView: React.FC<AutomationSettingsViewProps> = ({
                     key={mod}
                     type="button"
                     onClick={() => toggleModality(mod)}
-                    className={`rounded-xl border px-3 py-1.5 text-xs font-medium transition ${
+                    className={`rounded-xl border px-3 py-1.5 text-sm font-medium transition ${
                       active
-                        ? 'border-indigo-500 bg-indigo-600 text-white'
+                        ? 'border-indigo-500 bg-indigo-600 text-signal-ink'
                         : 'border-slate-800 bg-slate-950 text-slate-400'
                     }`}
                   >
@@ -226,7 +226,7 @@ export const AutomationSettingsView: React.FC<AutomationSettingsViewProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300">
+            <label className="block text-sm font-medium text-slate-300">
               Compatibilidade Mínima de Destaque ({minScore}%)
             </label>
             <input
@@ -242,10 +242,10 @@ export const AutomationSettingsView: React.FC<AutomationSettingsViewProps> = ({
 
           <div>
             <div className="flex items-center justify-between">
-              <label className="block text-xs font-medium text-slate-300">
+              <label className="block text-sm font-medium text-slate-300">
                 Frequência de Varredura
               </label>
-              <span className="text-[11px] font-semibold text-indigo-300">
+              <span className="text-sm font-semibold text-indigo-300">
                 {intervalMinutes >= 1440
                   ? 'Atualização Diária (a cada 24h)'
                   : intervalMinutes >= 60
@@ -265,9 +265,9 @@ export const AutomationSettingsView: React.FC<AutomationSettingsViewProps> = ({
                   key={preset.mins}
                   type="button"
                   onClick={() => setIntervalMinutes(preset.mins)}
-                  className={`rounded-lg border px-2.5 py-1 text-[11px] font-medium transition ${
+                  className={`rounded-lg border px-2.5 py-1 text-sm font-medium transition ${
                     intervalMinutes === preset.mins
-                      ? 'border-indigo-500 bg-indigo-600 text-white'
+                      ? 'border-indigo-500 bg-indigo-600 text-signal-ink'
                       : 'border-slate-800 bg-slate-950 text-slate-400 hover:text-slate-200'
                   }`}
                 >
@@ -283,13 +283,13 @@ export const AutomationSettingsView: React.FC<AutomationSettingsViewProps> = ({
               value={intervalMinutes}
               onChange={(e) => setIntervalMinutes(Number(e.target.value))}
               placeholder="Minutos personalizados (15 a 1440)"
-              className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+              className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
             />
           </div>
         </div>
 
         <div className="flex items-center justify-between border-t border-slate-800 pt-4">
-          <label className="inline-flex items-center gap-2 text-xs text-slate-300">
+          <label className="inline-flex items-center gap-2 text-sm text-slate-300">
             <input
               type="checkbox"
               checked={autoEnabled}
@@ -302,9 +302,9 @@ export const AutomationSettingsView: React.FC<AutomationSettingsViewProps> = ({
           <button
             type="submit"
             disabled={isSaving}
-            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-signal-ink hover:bg-indigo-500 disabled:opacity-50"
           >
-            <Save className="h-4 w-4" />
+            <Save className="h-[18px] w-[18px]" />
             {isSaving ? 'Salvando...' : 'Salvar Configurações de Automação'}
           </button>
         </div>
