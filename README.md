@@ -1,4 +1,4 @@
-# CandidAUTO — Plataforma Inteligente de Busca e Candidatura a Vagas com IA
+# TQEP — Plataforma Inteligente de Busca e Candidatura a Vagas com IA
 
 Aplicação web completa desenvolvida sob a arquitetura **Personal First, SaaS Ready** que atua como um **agente inteligente de recrutamento e candidaturas**: analisa currículos (PDF e DOCX) com rastreamento de evidências sem alucinação, descobre oportunidades reais automaticamente em múltiplas plataformas públicas, calcula compatibilidade de `0 a 100%`, prepara o preenchimento inteligente de formulários com Cofre de Respostas Confirmadas e exige aprovação explícita do candidato antes de qualquer envio.
 
